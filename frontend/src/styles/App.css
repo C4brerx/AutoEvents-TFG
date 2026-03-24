@@ -1,0 +1,146 @@
+/* --- src/styles/App.css --- */
+
+/* 1. Variables Globales (Paleta de Colores AutoEvents) */
+:root {
+    --ae-black: #121212;
+    --ae-darker: #0a0a0a;
+    --ae-nardo: #686a6c;
+    --ae-red: #e60000;
+    --ae-red-hover: #cc0000;
+    --ae-text: #f8f9fa;
+    --ae-card-bg: rgba(30, 30, 30, 0.75);
+}
+
+/* 2. Animación del Fondo Premium (Login) */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.animated-background {
+    background: linear-gradient(-45deg, var(--ae-darker), var(--ae-red), var(--ae-black), var(--ae-nardo));
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 3. Tarjeta Glassmorphism (Efecto Cristal) */
+.glass-card {
+    background-color: var(--ae-card-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 4. Estilos de Tipografía y Enlaces */
+.ae-title {
+    color: var(--ae-text);
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.ae-title span {
+    color: var(--ae-red);
+}
+
+.ae-link {
+    color: var(--ae-red);
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.ae-link:hover {
+    color: var(--ae-text);
+    text-decoration: underline;
+}
+
+/* 5. Inputs, Botones y Selectores Premium */
+.ae-input, .form-select.ae-input {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    border: 1px solid var(--ae-nardo) !important;
+    color: var(--ae-text) !important;
+    transition: all 0.3s ease;
+}
+
+/* Para que las opciones del desplegable de marca sean oscuras */
+.form-select.ae-input option {
+    background-color: var(--ae-black);
+    color: var(--ae-text);
+}
+
+.ae-input:focus, .form-select.ae-input:focus {
+    border-color: var(--ae-red) !important;
+    box-shadow: 0 0 0 0.25rem rgba(230, 0, 0, 0.25) !important;
+}
+/* Hacer que el texto de sugerencia se lea bien sobre el fondo oscuro */
+.ae-input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+.ae-btn-primary {
+    background-color: var(--ae-red) !important;
+    border: none !important;
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.ae-btn-primary:hover {
+    background-color: var(--ae-red-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(230, 0, 0, 0.6) !important;
+}
+
+/* --- ESTILOS PARA LA APP PRINCIPAL (DASHBOARD) --- */
+
+/* 6. Fondo animado sutil para el Dashboard (Burdeos visible) */
+.dashboard-animated-bg {
+    background: linear-gradient(-45deg, #0a0a0a, #3a0000, #121212, #250000);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    min-height: 100vh;
+    color: var(--ae-text);
+}
+
+/* 7. Animación suave para el menú desplegable */
+.dropdown-menu {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown-menu.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 8. Tarjetas de Vehículos (Efecto Hover 3D) */
+.car-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--ae-red) !important;
+}
+
+.car-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(230, 0, 0, 0.3) !important;
+}
+
+/* 9. Animación de entrada para las pestañas */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
