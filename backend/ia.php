@@ -21,17 +21,17 @@ if ($metodo === 'POST') {
         $modelo = $datos->modelo;
         $sintoma = isset($datos->sintoma) ? trim($datos->sintoma) : "";
 
-        // 1. TU API KEY REAL
+        // 1.  API KEY
         $apiKey = "AIzaSyBcQsWxhBIfbG0e4M51OR-PeIO9aIZZae4";
 
-        // 2. Elegimos la orden (Prompt) dependiendo de si hay síntoma o no
+        // 2. Prompt
         if ($sintoma !== "") {
             $prompt = "Eres un mecánico experto. Un usuario tiene un $marca $modelo y reporta este problema: '$sintoma'. Dame una respuesta muy breve (máximo 3 párrafos) con las 3 causas más probables en este modelo exacto, y dime si es peligroso conducir así. Usa formato Markdown con emojis.";
         } else {
             $prompt = "Eres un mecánico experto en coches de alto rendimiento. Un usuario tiene un $marca $modelo. Dame una respuesta breve y directa que contenga: 1 dato curioso o técnico muy poco conocido sobre este modelo exacto, y 2 consejos de mantenimiento críticos y específicos para su motor o chasis. No uses saludos, ve directo al grano y usa formato Markdown con emojis.";
         }
 
-        // 3. Conexión (Asegúrate de poner el modelo que te funcionó en el paso anterior)
+        // 3. Conexión Api
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey;
 
         $cuerpo = [

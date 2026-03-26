@@ -2,7 +2,7 @@
 $host = '127.0.0.1';
 $db   = 'autoevents_db';
 $user = 'root';
-$pass = ''; // En XAMPP por defecto está vacío
+$pass = '';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
@@ -19,4 +19,4 @@ try {
     echo json_encode(["estado" => "error", "mensaje" => "Error de conexión a la base de datos: " . $e->getMessage()]);
     exit;
 }
-// SIN ETIQUETA DE CIERRE ?>
+ ?>

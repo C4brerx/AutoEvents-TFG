@@ -40,7 +40,7 @@ if (!empty($datos->email) && !empty($datos->password)) {
             ]);
         } else {
             // Email o contraseña equivocados
-            http_response_code(401); // Código de No Autorizado
+            http_response_code(401); //  No Autorizado
             echo json_encode(["estado" => "error", "mensaje" => "Correo o contraseña incorrectos."]);
         }
     } catch (PDOException $e) {

@@ -15,9 +15,9 @@ require_once 'conexion.php';
 $metodo = $_SERVER['REQUEST_METHOD'];
 $directorio_subida = __DIR__ . '/uploads/';
 
-// ==========================================
+
 // 1. LEER VEHÍCULOS (GET)
-// ==========================================
+
 if ($metodo === 'GET') {
     if (isset($_GET['usuario_id'])) {
         try {
@@ -35,16 +35,15 @@ if ($metodo === 'GET') {
     }
 }
 
-// ==========================================
 // 2. CREAR O ACTUALIZAR VEHÍCULO (POST)
-// ==========================================
+
 elseif ($metodo === 'POST') {
     $usuario_id = $_POST['usuario_id'] ?? null;
     $marca = $_POST['marca'] ?? null;
     $modelo = $_POST['modelo'] ?? null;
     $anio = $_POST['anio'] ?? null;
     $motor = $_POST['motor'] ?? '';
-    $especificaciones = $_POST['especificaciones'] ?? ''; // NUEVO CAMPO
+    $especificaciones = $_POST['especificaciones'] ?? '';
     $id = $_POST['id'] ?? null;
 
     if ($usuario_id && $marca && $modelo && $anio) {
@@ -70,7 +69,6 @@ elseif ($metodo === 'POST') {
 
         try {
             if ($id) {
-                // EDICIÓN
                 // Si el usuario sube fotos nuevas, REEMPLAZAMOS las viejas. Si no sube ninguna, se quedan las viejas.
                 if (count($nombres_fotos) > 0) {
                     $sql = "UPDATE vehiculos SET marca = :marca, modelo = :modelo, anio = :anio, motor = :motor, especificaciones = :especificaciones, fotos = :fotos WHERE id = :id AND usuario_id = :usuario_id";
@@ -103,9 +101,8 @@ elseif ($metodo === 'POST') {
     }
 }
 
-// ==========================================
 // 3. ELIMINAR VEHÍCULO (DELETE)
-// ==========================================
+
 elseif ($metodo === 'DELETE') {
     if (isset($_GET['id'])) {
         try {

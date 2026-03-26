@@ -1,15 +1,14 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS"); // Añadimos OPTIONS aquí
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
 
-// --- AÑADE ESTO PARA RESPONDER A LA PETICIÓN INVISIBLE DEL NAVEGADOR ---
+// --- Responder peticion invisible ---
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-// ----------------------------------------------------------------------
 
 require_once 'conexion.php';
 /** @var PDO $pdo */
@@ -46,4 +45,4 @@ if (!empty($datos->nombre) && !empty($datos->email) && !empty($datos->password))
     http_response_code(400);
     echo json_encode(["estado" => "error", "mensaje" => "Faltan datos (nombre, email o contraseña)."]);
 }
-// SIN ETIQUETA DE CIERRE ?>
+ ?>

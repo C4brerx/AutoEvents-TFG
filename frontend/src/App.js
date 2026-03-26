@@ -24,10 +24,8 @@ function App() {
 
     const [cocheDetalleVista, setCocheDetalleVista] = useState(null);
     const [indiceFotoModal, setIndiceFotoModal] = useState(0);
-
-    // ==========================================
+    
     // ESTADOS PARA LA IA (General y Diagnóstico)
-    // ==========================================
     const [iaCargando, setIaCargando] = useState(false);
     const [iaRespuesta, setIaRespuesta] = useState(null);
 
@@ -102,9 +100,9 @@ function App() {
     const fotoAnterior = (totalFotos) => setIndiceFotoModal(prev => (prev === 0 ? totalFotos - 1 : prev - 1));
     const fotoSiguiente = (totalFotos) => setIndiceFotoModal(prev => (prev === totalFotos - 1 ? 0 : prev + 1));
 
-    // ==========================================
+
     // FUNCIONES IA
-    // ==========================================
+
     const consultarIA = async (coche) => {
         setIaCargando(true); setIaRespuesta(null);
         try {
