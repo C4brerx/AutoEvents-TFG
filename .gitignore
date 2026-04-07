@@ -1,3 +1,12 @@
+# Dependencias
 node_modules/
-backend/uploads/
+frontend/node_modules/
+
+# Archivos de configuración y secretos
 .env
+.idea/
+
+# Archivos generados y subidas
+frontend/dist/
+backend/uploads/*
+!backend/uploads/.gitkeep
