@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 
 -- Volcando datos para la tabla autoevents_db.usuarios: ~2 rows (aproximadamente)
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `fecha_registro`) VALUES
-	(3, 'Adrian Cabrera Caceres', 'acabreracaceres@gmail.com', '$2y$10$H7fyOoQnowqfxd8NULj4tuTvm.uP7PtN1DJ/68clmhWKzFtWdiDE.', '2026-03-19 13:21:02'),
+	(3, 'Adrian Cabrera Caceres', 'admin@test.com', '$2y$10$H7fyOoQnowqfxd8NULj4tuTvm.uP7PtN1DJ/68clmhWKzFtWdiDE.', '2026-03-19 13:21:02'),
 	(4, 'Pruebas', 'P@gmail.es', '$2y$10$Xqf1S3MIhP4xVM/cvj5FMuS3VqX71WEyBS.eGEctrY8pgG2PVP94O', '2026-03-19 16:00:20');
 
 -- Volcando estructura para tabla autoevents_db.vehiculos
