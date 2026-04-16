@@ -10,3 +10,7 @@ frontend/node_modules/
 frontend/dist/
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Ignorar configuración sensible
+backend/.env
+.vscode/

@@ -1,17 +1,49 @@
 /* --- src/styles/App.css --- */
 
-/* 1. Variables Globales (Paleta de Colores AutoEvents) */
+/* =========================================
+   1. Variables Globales (Paleta y Físicas)
+   ========================================= */
 :root {
+    /* Colores AutoEvents */
     --ae-black: #121212;
-    --ae-darker: #0a0a0a;
+    --ae-darker: #050505;
     --ae-nardo: #686a6c;
     --ae-red: #e60000;
-    --ae-red-hover: #cc0000;
+    --ae-red-hover: #ff1a1a;
     --ae-text: #f8f9fa;
-    --ae-card-bg: rgba(30, 30, 30, 0.75);
+    --ae-text-muted: #a0a0a0;
+    --ae-card-bg: rgba(20, 20, 20, 0.65);
+
+    /* Físicas de Animación Premium */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Brillos */
+    --ae-glow-red: 0 0 20px rgba(230, 0, 0, 0.4);
 }
 
-/* 2. Animación del Fondo Premium (Login) */
+/* =========================================
+   2. Scrollbar Custom (Adiós a la barra fea)
+   ========================================= */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--ae-darker);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--ae-nardo);
+    border-radius: 5px;
+    border: 2px solid var(--ae-darker);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ae-red);
+}
+
+/* =========================================
+   3. Animación del Fondo Premium
+   ========================================= */
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -19,9 +51,9 @@
 }
 
 .animated-background {
-    background: linear-gradient(-45deg, var(--ae-darker), var(--ae-red), var(--ae-black), var(--ae-nardo));
+    background: linear-gradient(-45deg, var(--ae-darker), rgba(250, 1, 1, 0.8), var(--ae-black), rgba(50,50,50,0.9));
     background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    animation: gradientBG 18s ease infinite;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -29,48 +61,62 @@
     justify-content: center;
 }
 
-/* 3. Tarjeta Glassmorphism (Efecto Cristal) */
+.dashboard-animated-bg {
+    background: linear-gradient(-45deg, #050505, #2a0000, #121212, #1f0000);
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite;
+    min-height: 100vh;
+    color: var(--ae-text);
+}
+
+/* =========================================
+   4. Tarjeta Glassmorphism Pro (Efecto Cristal)
+   ========================================= */
 .glass-card {
     background-color: var(--ae-card-bg) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.4s var(--ease-out-expo);
 }
 
-/* 4. Estilos de Tipografía y Enlaces */
+/* =========================================
+   5. Estilos de Tipografía y Enlaces
+   ========================================= */
 .ae-title {
     color: var(--ae-text);
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 1.5px;
+    text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.9);
 }
-
 .ae-title span {
     color: var(--ae-red);
+    text-shadow: var(--ae-glow-red);
 }
 
 .ae-link {
     color: var(--ae-red);
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.3s var(--ease-out-expo), text-shadow 0.3s ease;
 }
-
 .ae-link:hover {
-    color: var(--ae-text);
-    text-decoration: underline;
+    color: #fff;
+    text-shadow: var(--ae-glow-red);
 }
 
-/* 5. Inputs, Botones y Selectores Premium */
+/* =========================================
+   6. Inputs, Botones y Formularios
+   ========================================= */
 .ae-input, .form-select.ae-input {
-    background-color: rgba(0, 0, 0, 0.6) !important;
-    border: 1px solid var(--ae-nardo) !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
     color: var(--ae-text) !important;
-    transition: all 0.3s ease;
+    transition: all 0.3s var(--ease-out-expo);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Para que las opciones del desplegable de marca sean oscuras */
 .form-select.ae-input option {
     background-color: var(--ae-black);
     color: var(--ae-text);
@@ -78,69 +124,230 @@
 
 .ae-input:focus, .form-select.ae-input:focus {
     border-color: var(--ae-red) !important;
-    box-shadow: 0 0 0 0.25rem rgba(230, 0, 0, 0.25) !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    box-shadow: 0 0 0 3px rgba(230, 0, 0, 0.15), inset 0 1px 2px rgba(0,0,0,0.5) !important;
+    transform: translateY(-1px);
 }
-/* Hacer que el texto de sugerencia se lea bien sobre el fondo oscuro */
+
+/* FIX DE LECTURABILIDAD Y ACCESIBILIDAD (UX) */
+::placeholder,
+.form-control::placeholder,
 .ae-input::placeholder {
-    color: rgba(255, 255, 255, 0.4) !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
 }
+
+input.form-control,
+textarea.form-control,
+select.form-select,
+.ae-input {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.input-group-text.text-secondary i {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.input-group .bg-transparent {
+    background-color: transparent !important;
+}
+
+/* Botón Principal Animado */
 .ae-btn-primary {
-    background-color: var(--ae-red) !important;
-    border: none !important;
+    background: linear-gradient(135deg, var(--ae-red), #990000) !important;
+    border: 1px solid #ff3333 !important;
     color: white !important;
-    transition: all 0.3s ease;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.4s var(--ease-out-expo) !important;
+    position: relative;
+    overflow: hidden;
 }
 
 .ae-btn-primary:hover {
-    background-color: var(--ae-red-hover) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(230, 0, 0, 0.6) !important;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(230, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+    border-color: var(--ae-red-hover) !important;
 }
 
-/* --- ESTILOS PARA LA APP PRINCIPAL (DASHBOARD) --- */
-
-/* 6. Fondo animado sutil para el Dashboard (Burdeos visible) */
-.dashboard-animated-bg {
-    background: linear-gradient(-45deg, #0a0a0a, #3a0000, #121212, #250000);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    min-height: 100vh;
-    color: var(--ae-text);
+.ae-btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(230, 0, 0, 0.4) !important;
 }
 
-/* 7. Animación suave para el menú desplegable */
-.dropdown-menu {
+/* =========================================
+   7. Tarjetas y Efectos de Imagen (Coches/Eventos)
+   ========================================= */
+.car-card, .event-card {
+    transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo);
+    border-left: 3px solid var(--ae-red) !important;
+    overflow: hidden;
+}
+
+.car-card:hover, .event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), var(--ae-glow-red) !important;
+    border-left-color: var(--ae-red-hover) !important;
+    z-index: 2;
+}
+
+.car-card img, .event-card img {
+    transition: transform 0.8s var(--ease-out-expo);
+    will-change: transform;
+}
+
+.car-card:hover img, .event-card:hover img {
+    transform: scale(1.08);
+}
+
+/* =========================================
+   8. Navegación y Menús Desplegables
+   ========================================= */
+.navbar-custom {
+    border-bottom: 1px solid rgba(230, 0, 0, 0.3);
+    background-color: rgba(10, 10, 10, 0.8) !important;
+    backdrop-filter: blur(15px);
+}
+
+.dropdown-menu-custom {
     display: block;
     visibility: hidden;
     opacity: 0;
-    transform: translateY(15px);
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: translateY(20px) scale(0.95);
+    transform-origin: top right;
+    transition: all 0.4s var(--ease-spring);
 }
-
-.dropdown:hover .dropdown-menu,
-.dropdown-menu.show {
+.dropdown-menu-custom.show {
     visibility: visible;
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
-/* 8. Tarjetas de Vehículos (Efecto Hover 3D) */
-.car-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-left: 4px solid var(--ae-red) !important;
-}
-
-.car-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(230, 0, 0, 0.3) !important;
-}
-
-/* 9. Animación de entrada para las pestañas */
+/* =========================================
+   9. Animaciones de Interfaz
+   ========================================= */
 .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+    animation: fadeInUp 0.6s var(--ease-out-expo) forwards;
+    opacity: 0;
 }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* =========================================
+   10. Modales y Contenedores
+   ========================================= */
+.modal-backdrop-custom {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1050;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    animation: fadeInModal 0.3s ease;
+}
+@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-container-custom {
+    width: 100%; max-width: 800px; max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 1);
+}
+
+/* =========================================
+   11. Clases de Utilidad y Diseño Específico
+   ========================================= */
+.relative-wrapper { position: relative; }
+.cursor-pointer { cursor: pointer; }
+.border-white-10 { border-color: rgba(255,255,255,0.1) !important; }
+
+/* Textos */
+.text-ae-red { color: var(--ae-red); }
+.text-ae-theme { color: var(--ae-text); }
+.text-sm { font-size: 0.8rem; }
+.text-md { font-size: 0.9rem; }
+.text-095 { font-size: 0.95rem; }
+.text-pre-wrap { white-space: pre-wrap; }
+
+/* Iconos */
+.icon-close { font-size: 1.5rem; transition: transform 0.3s ease; }
+.icon-close:hover { transform: rotate(90deg) scale(1.2); color: var(--ae-red); }
+.icon-camera-modal { font-size: 4rem; }
+.icon-camera-card { font-size: 3rem; }
+.icon-user-arrow { font-size: 0.8rem; }
+
+/* Imágenes Estáticas */
+.carousel-img { height: 350px; object-fit: cover; }
+.news-img { height: 200px; object-fit: cover; }
+.car-grid-img { height: 240px; object-fit: cover; }
+.no-photo-modal { height: 300px; background-color: #111; display: flex; align-items: center; justify-content: center; }
+.no-photo-card { height: 240px; background-color: #111; display: flex; align-items: center; justify-content: center; }
+
+/* Carrusel y Formularios */
+.carousel-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background-color: rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+}
+.carousel-dot.active { background-color: var(--ae-red); transform: scale(1.3); }
+
+.form-card-new { border-top: 4px solid var(--ae-red); box-shadow: 0 -4px 20px rgba(230,0,0,0.15) !important; }
+.form-card-edit { border-top: 4px solid #ffc107; box-shadow: 0 -4px 20px rgba(255,193,7,0.15) !important; }
+
+/* --- Panel de IA --- */
+.ia-section-box { background-color: rgba(0,0,0,0.6); border: 1px solid rgba(230,0,0,0.3) !important; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+.btn-ask-ia { border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; }
+.btn-ask-ia:hover { border-color: var(--ae-red); background-color: rgba(230,0,0,0.1); }
+.ia-response-box { background-color: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--ae-nardo); }
+.ia-diagnosis-box { background-color: rgba(220,53,69,0.05); border-left: 3px solid var(--ae-red); }
+.opacity-30 { opacity: 0.3; }
+
+.btn-ae-red { background-color: var(--ae-red); color: white; transition: all 0.3s ease; }
+.btn-ae-red:hover { background-color: #ff1a1a; color: white; box-shadow: 0 0 10px rgba(230,0,0,0.5); transform: translateY(-2px); }
+.btn-ae-red:disabled { background-color: var(--ae-red); color: white; opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+
+/* =========================================
+   12. CUSTOM FLATPICKR (CALENDARIO PREMIUM)
+   ========================================= */
+.flatpickr-calendar {
+    background: var(--ae-darker) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9) !important;
+    font-family: inherit !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
+.flatpickr-day.endRange.nextMonthDay {
+    background: var(--ae-red) !important;
+    border-color: var(--ae-red) !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time .flatpickr-am-pm:hover,
+.flatpickr-time input:focus,
+.flatpickr-time .flatpickr-am-pm:focus {
+    background: rgba(230, 0, 0, 0.2) !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowUp:after { border-bottom-color: var(--ae-red) !important; }
+.flatpickr-time .numInputWrapper span.arrowDown:after { border-top-color: var(--ae-red) !important; }

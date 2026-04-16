@@ -1,6 +1,10 @@
 <?php
-// Cabeceras de seguridad y CORS (incluyendo OPTIONS como hicimos en el registro)
-header("Access-Control-Allow-Origin: *");
+// 1. INICIAR SESIÓN (Siempre al principio)
+session_start();
+
+// Cabeceras de seguridad y CORS (Modificadas según el feedback del profe)
+header("Access-Control-Allow-Origin: http://localhost:3000"); // Obligatorio poner el origen real para usar credenciales
+header("Access-Control-Allow-Credentials: true"); // Obligatorio para que funcione session_start() con React
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
@@ -26,6 +30,10 @@ if (!empty($datos->email) && !empty($datos->password)) {
 
         // Si el usuario existe y la contraseña coincide con el hash guardado
         if ($usuario && password_verify($datos->password, $usuario['password'])) {
+
+            // 2. GUARDAMOS EL ID DEL USUARIO EN LA SESIÓN DEL SERVIDOR
+            $_SESSION['user_id'] = $usuario['id'];
+
             http_response_code(200);
 
             // Devolvemos los datos del usuario (¡NUNCA la contraseña!) para que React los guarde
@@ -44,8 +52,10 @@ if (!empty($datos->email) && !empty($datos->password)) {
             echo json_encode(["estado" => "error", "mensaje" => "Correo o contraseña incorrectos."]);
         }
     } catch (PDOException $e) {
+        // 3. Loguear en el servidor y devolver mensaje genérico (Feedback del profesor)
+        error_log($e->getMessage());
         http_response_code(500);
-        echo json_encode(["estado" => "error", "mensaje" => "Error en el servidor: " . $e->getMessage()]);
+        echo json_encode(["estado" => "error", "mensaje" => "Error interno en el servidor."]);
     }
 } else {
     http_response_code(400);
