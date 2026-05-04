@@ -1,4 +1,5 @@
 <?php
+// backend/recomendar_ia.php
 session_start();
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Credentials: true");
@@ -14,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once 'conexion.php';
 /** @var PDO $pdo */
 
-// SEGURIDAD: COMPROBAR SESIÓN
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(["estado" => "error", "mensaje" => "No autorizado para usar la IA."]);
@@ -24,7 +24,23 @@ if (!isset($_SESSION['user_id'])) {
 $usuario_id = $_SESSION['user_id'];
 
 
-// 🔐 LECTURA SEGURA DE LA API KEY DESDE EL .ENV
+if (!isset($_SESSION['ia_rec_requests'])) {
+    $_SESSION['ia_rec_requests'] = [];
+}
+$_SESSION['ia_rec_requests'] = array_filter($_SESSION['ia_rec_requests'], function($ts) {
+    return ($ts > time() - 3600);
+});
+
+if (count($_SESSION['ia_rec_requests']) >= 3) {
+    http_response_code(429); // Too Many Requests
+    echo json_encode(["estado" => "error", "mensaje" => "Has alcanzado el límite de recomendaciones por hora. ¡Deja descansar al mecánico un rato!"]);
+    exit();
+}
+$_SESSION['ia_rec_requests'][] = time();
+
+
+
+
 
 $ruta_env_backend = __DIR__ . '/.env';
 $ruta_env_raiz = dirname(__DIR__) . '/.env';
@@ -48,10 +64,9 @@ if (!$api_key) {
 }
 
 
-// LÓGICA DE RECOMENDACIÓN
+
 
 try {
-    // 1. Conseguir los coches del usuario
     $stmtCoches = $pdo->prepare("SELECT marca, modelo, anio FROM vehiculos WHERE usuario_id = ?");
     $stmtCoches->execute([$usuario_id]);
     $coches = $stmtCoches->fetchAll(PDO::FETCH_ASSOC);
@@ -61,7 +76,6 @@ try {
         exit();
     }
 
-    // 2. Conseguir los próximos eventos disponibles
     $stmtEventos = $pdo->prepare("SELECT id, titulo, tipo, ubicacion, fecha FROM eventos WHERE fecha >= CURRENT_DATE() LIMIT 10");
     $stmtEventos->execute();
     $eventos = $stmtEventos->fetchAll(PDO::FETCH_ASSOC);
@@ -71,7 +85,6 @@ try {
         exit();
     }
 
-    // 3. Preparar los datos para pasárselos a Gemini
     $textoCoches = json_encode($coches);
     $textoEventos = json_encode($eventos);
 
@@ -109,7 +122,6 @@ try {
 
     $resultado = json_decode($respuesta_json, true);
 
-    // Verificamos si Gemini nos ha devuelto un error propio (ej. API limit, modelo incorrecto...)
     if (isset($resultado['error'])) {
         http_response_code(500);
         echo json_encode(["estado" => "error", "mensaje" => "Gemini rechazó la petición: " . $resultado['error']['message']]);
@@ -125,7 +137,6 @@ try {
     }
 
 } catch (Exception $e) {
-    // AQUÍ ESTÁ LA MAGIA: Ahora escupirá el error real
     http_response_code(500);
     echo json_encode(["estado" => "error", "mensaje" => "Fallo exacto: " . $e->getMessage() . " (Línea: " . $e->getLine() . ")"]);
 }

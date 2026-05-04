@@ -1,9 +1,14 @@
 <?php
-// 1. INICIAR SESIÓN (Debe ser la primera línea)
+
+session_set_cookie_params([
+    'lifetime' => 86400,
+    'path' => '/',
+    'httponly' => true,  // Evita que JavaScript (XSS) robe la cookiess
+    'samesite' => 'Lax'  // Evita ataques CSRF cruzados
+]);
 session_start();
 
-// 2. CONFIGURAR CORS RESTRINGIDO
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Obligatorio para sesiones
+header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -17,26 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once 'conexion.php';
 /** @var PDO $pdo */
 
-// 3. VALIDAR LA SESIÓN (Si no hay sesión, echamos al usuario)
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(["estado" => "error", "mensaje" => "No autorizado. Inicia sesión primero."]);
     exit();
 }
 
-// ESTA ES LA ÚNICA FUENTE DE VERDAD AHORA: El ID guardado en el servidor
 $usuario_id = $_SESSION['user_id'];
-
 $metodo = $_SERVER['REQUEST_METHOD'];
 $directorio_subida = __DIR__ . '/uploads/';
 
-// Crear carpeta si no existe
 if (!is_dir($directorio_subida)) {
     mkdir($directorio_subida, 0755, true);
 }
 
 
-// 1. LEER VEHÍCULOS (GET)
 
 if ($metodo === 'GET') {
     try {
@@ -55,20 +55,19 @@ if ($metodo === 'GET') {
 }
 
 
-// 2. CREAR O ACTUALIZAR VEHÍCULO (POST)
 
 elseif ($metodo === 'POST') {
-    // Sanitizamos limpiando espacios en blanco por seguridad
-    $marca = trim($_POST['marca'] ?? '');
-    $modelo = trim($_POST['modelo'] ?? '');
+    // BLINDAJE XSS : Convertimos caracteres peligrosos como < > en texto inofensivo
+    $marca = htmlspecialchars(trim($_POST['marca'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $modelo = htmlspecialchars(trim($_POST['modelo'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $motor = htmlspecialchars(trim($_POST['motor'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $especificaciones = htmlspecialchars(trim($_POST['especificaciones'] ?? ''), ENT_QUOTES, 'UTF-8');
+
     $anio = isset($_POST['anio']) ? intval($_POST['anio']) : null;
-    $motor = trim($_POST['motor'] ?? '');
-    $especificaciones = trim($_POST['especificaciones'] ?? '');
     $id = $_POST['id'] ?? null;
 
     if ($marca && $modelo && $anio) {
-
-        // NUEVO: Validación estricta del año
+        // Validación estricta del año
         $anio_actual = intval(date("Y"));
         if ($anio < 1886 || $anio > ($anio_actual + 1)) {
             http_response_code(400);
@@ -89,20 +88,17 @@ elseif ($metodo === 'POST') {
                 $tmpFilePath = $_FILES['fotos']['tmp_name'][$i];
 
                 if ($tmpFilePath != "") {
-                    // NUEVO: Validación estricta de tamaño (Máximo 3MB por foto)
-                    // 3MB = 3 * 1024 * 1024 bytes = 3145728 bytes
+                    // Máximo 3MB
                     if ($_FILES['fotos']['size'][$i] > 3145728) {
                         http_response_code(400);
                         echo json_encode(["estado" => "error", "mensaje" => "La imagen '" . $_FILES['fotos']['name'][$i] . "' supera el límite de 3MB."]);
                         exit();
                     }
 
-                    // Validamos el MIME real y la extensión
                     $mime_type = finfo_file($finfo, $tmpFilePath);
                     $ext = strtolower(pathinfo($_FILES['fotos']['name'][$i], PATHINFO_EXTENSION));
 
                     if (in_array($mime_type, $mimes_permitidos) && in_array($ext, $extensiones_permitidas)) {
-                        // NUEVO: Nombres únicos criptográficos (Anti-hackeo y anti-sobreescritura)
                         $nombre_unico = uniqid('ae_') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
                         $nuevo_destino = $directorio_subida . $nombre_unico;
 
@@ -123,7 +119,20 @@ elseif ($metodo === 'POST') {
 
         try {
             if ($id) {
+                // Si estamos editando y suben fotos nuevas, borramos las fotos viejas del disco duro
                 if (count($nombres_fotos) > 0) {
+                    $stmtOld = $pdo->prepare("SELECT fotos FROM vehiculos WHERE id = ? AND usuario_id = ?");
+                    $stmtOld->execute([$id, $usuario_id]);
+                    $fotos_antiguas = $stmtOld->fetchColumn();
+
+                    if ($fotos_antiguas) {
+                        $array_fotos_antiguas = explode(',', $fotos_antiguas);
+                        foreach ($array_fotos_antiguas as $foto_vieja) {
+                            $ruta_borrar = $directorio_subida . trim($foto_vieja);
+                            if (file_exists($ruta_borrar)) unlink($ruta_borrar);
+                        }
+                    }
+
                     $sql = "UPDATE vehiculos SET marca = :marca, modelo = :modelo, anio = :anio, motor = :motor, especificaciones = :especificaciones, fotos = :fotos WHERE id = :id AND usuario_id = :usuario_id";
                     $params = [':marca' => $marca, ':modelo' => $modelo, ':anio' => $anio, ':motor' => $motor, ':especificaciones' => $especificaciones, ':fotos' => $fotos_string, ':id' => $id, ':usuario_id' => $usuario_id];
                 } else {
@@ -146,29 +155,43 @@ elseif ($metodo === 'POST') {
         } catch (PDOException $e) {
             error_log($e->getMessage());
             http_response_code(500);
-            echo json_encode(["estado" => "error", "mensaje" => "Error interno al guardar en base de datos."]);
+            echo json_encode(["estado" => "error", "mensaje" => "Error interno al guardar."]);
         }
     } else {
         http_response_code(400);
-        echo json_encode(["estado" => "error", "mensaje" => "Faltan datos obligatorios (Marca, Modelo o Año)."]);
+        echo json_encode(["estado" => "error", "mensaje" => "Faltan datos obligatorios."]);
     }
 }
 
 
-// 3. ELIMINAR VEHÍCULO (DELETE)
+
 elseif ($metodo === 'DELETE') {
     if (isset($_GET['id'])) {
         try {
+            $stmtFotos = $pdo->prepare("SELECT fotos FROM vehiculos WHERE id = :id AND usuario_id = :usuario_id");
+            $stmtFotos->execute([':id' => $_GET['id'], ':usuario_id' => $usuario_id]);
+            $fotos_para_borrar = $stmtFotos->fetchColumn();
+
             $sql = "DELETE FROM vehiculos WHERE id = :id AND usuario_id = :usuario_id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $_GET['id'], ':usuario_id' => $usuario_id]);
 
             if ($stmt->rowCount() > 0) {
+                if ($fotos_para_borrar) {
+                    $array_fotos = explode(',', $fotos_para_borrar);
+                    foreach ($array_fotos as $foto) {
+                        $ruta_archivo = $directorio_subida . trim($foto);
+                        if (file_exists($ruta_archivo)) {
+                            unlink($ruta_archivo); // Elimina el archivo físico
+                        }
+                    }
+                }
+
                 http_response_code(200);
-                echo json_encode(["estado" => "exito", "mensaje" => "Vehículo eliminado."]);
+                echo json_encode(["estado" => "exito", "mensaje" => "Vehículo y datos eliminados."]);
             } else {
                 http_response_code(403);
-                echo json_encode(["estado" => "error", "mensaje" => "No tienes permiso o el vehículo no existe."]);
+                echo json_encode(["estado" => "error", "mensaje" => "No tienes permiso o no existe."]);
             }
         } catch (PDOException $e) {
             error_log($e->getMessage());

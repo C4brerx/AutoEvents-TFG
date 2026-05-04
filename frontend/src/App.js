@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './styles/App.css';
 import Swal from 'sweetalert2';
 
-
 // Importamos los componentes modulares
 import LoginForm from './components/LoginForm';
 import Navbar from './components/Navbar';
@@ -10,6 +9,11 @@ import VehicleCard from './components/VehicleCard';
 import VehicleModal from './components/VehicleModal';
 import UserProfile from './components/UserProfile';
 import EventList from './components/EventList';
+import AdminDashboard from './components/AdminDashboard';
+import Community from './components/Community';
+import Marketplace from './components/Marketplace';
+import Messages from './components/Messages';
+
 
 function App() {
     const [usuario, setUsuario] = useState(() => {
@@ -160,7 +164,7 @@ function App() {
 
             <div className="container py-5">
 
-                {/* SECCIÓN INICIO CON LA LISTA DE EVENTOS DINÁMICA     */}
+                {/* SECCIÓN INICIO */}
                 {seccionActiva === 'inicio' && (
                     <div className="fade-in">
                         <div className="d-flex justify-content-between align-items-end mb-4 border-bottom border-secondary pb-3">
@@ -169,13 +173,11 @@ function App() {
                                 <p className="text-secondary m-0 mt-1">Descubre las mejores concentraciones y trackdays cerca de ti.</p>
                             </div>
                         </div>
-
                         <EventList />
-
                     </div>
                 )}
 
-                {/* SECCIÓN GARAJE                                        */}
+                {/* SECCIÓN GARAJE */}
                 {seccionActiva === 'garaje' && (
                     <div className="fade-in">
                         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
@@ -210,9 +212,28 @@ function App() {
                     </div>
                 )}
 
-                {/* SECCIÓN PERFIL                                        */}
+                {/* SECCIÓN COMUNIDAD */}
+                {seccionActiva === 'comunidad' && (
+                    <Community />
+                )}
+
+                {/* SECCIÓN TIENDA */}
+                {seccionActiva === 'tienda' && (
+                    <Marketplace usuario={usuario} />
+                )}
+                {/* SECCIÓN MENSAJES */}
+                {seccionActiva === 'mensajes' && (
+                    <Messages usuario={usuario} />
+                )}
+
+                {/* SECCIÓN PERFIL */}
                 {seccionActiva === 'perfil' && (
                     <UserProfile usuario={usuario} setUsuario={setUsuario} />
+                )}
+
+                {/* SECCIÓN ADMIN */}
+                {seccionActiva === 'admin' && (
+                    <AdminDashboard />
                 )}
 
             </div>

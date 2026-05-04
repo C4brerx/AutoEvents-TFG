@@ -351,3 +351,177 @@ select.form-select,
 
 .flatpickr-time .numInputWrapper span.arrowUp:after { border-bottom-color: var(--ae-red) !important; }
 .flatpickr-time .numInputWrapper span.arrowDown:after { border-top-color: var(--ae-red) !important; }
+
+/* =========================================
+   13. CUSTOM FIXES: Menú Perfil y Tabla Admin
+   ========================================= */
+
+/* --- Menú Desplegable de Usuario --- */
+.ae-user-dropdown {
+    background-color: rgba(15, 15, 15, 0.95) !important;
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(230, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 0.5rem;
+}
+.ae-user-dropdown .btn-outline-light {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.ae-user-dropdown .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateX(4px);
+}
+.ae-user-dropdown .btn-danger {
+    background-color: rgba(230, 0, 0, 0.05);
+    color: #ff4d4d;
+    border: 1px solid rgba(230, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.ae-user-dropdown .btn-danger:hover {
+    background-color: var(--ae-red);
+    color: white;
+    box-shadow: 0 0 15px rgba(230, 0, 0, 0.4);
+    transform: translateX(4px);
+}
+
+/* --- Tabla de Gestión Integrada --- */
+.ae-table-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden; /* Corta los bordes rectos de la tabla interna */
+}
+
+.ae-table {
+    margin-bottom: 0;
+    color: var(--ae-text);
+    --bs-table-bg: transparent; /* Fuerza a Bootstrap a ser transparente */
+}
+
+.ae-table thead th {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-bottom: 2px solid var(--ae-red) !important;
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    padding: 1.2rem 1rem;
+}
+
+.ae-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.ae-table tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.ae-table tbody td {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.ae-table tbody tr:last-child td {
+    border-bottom: none !important; /* Quita la línea de la última fila */
+}
+
+/* Botoncito editar elegante */
+.btn-ae-edit {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-radius: 6px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+.btn-ae-edit:hover {
+    background-color: #fff;
+    color: var(--ae-black);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* =========================================
+   14. FIX: Desplegable SweetAlert (Modo Oscuro)
+   ========================================= */
+.swal2-popup .swal2-select {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.swal2-popup .swal2-select option {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.swal2-popup .swal2-select:focus {
+    border-color: var(--ae-red) !important;
+    box-shadow: 0 0 0 3px rgba(230, 0, 0, 0.2) !important;
+}
+/* =========================================
+   15. MARKETPLACE Y MODO AUTODOC
+   ========================================= */
+
+/* Botón de Carrito Premium */
+.ae-cart-btn-premium {
+    border: 1px solid var(--ae-red) !important;
+    transition: all 0.3s var(--ease-out-expo);
+}
+.ae-cart-btn-premium:hover {
+    background-color: var(--ae-red-hover) !important;
+    box-shadow: 0 0 15px rgba(230, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Contenedor del Buscador Autodoc */
+.ae-autodoc-container {
+    background-color: rgba(230, 0, 0, 0.05) !important;
+    border: 1px solid rgba(230, 0, 0, 0.2) !important;
+}
+
+/* Inputs del Buscador Autodoc */
+.ae-autodoc-input {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    height: 50px;
+    border: none !important;
+    color: white !important;
+}
+
+/* Tarjetas de Producto */
+.ae-product-card {
+    background-color: rgba(20, 20, 20, 0.8) !important;
+}
+
+.ae-product-img-container {
+    height: 220px;
+    overflow: hidden;
+    background-color: #111;
+}
+
+.ae-product-img {
+    opacity: 0.9;
+}
+
+/* Truncar textos largos a 2 líneas (Efecto puntos suspensivos) */
+.ae-text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Borde sutil para separadores */
+.ae-border-subtle {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}

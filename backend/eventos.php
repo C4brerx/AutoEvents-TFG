@@ -23,11 +23,11 @@ $usuario_id = $_SESSION['user_id'];
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 
-// LEER EVENTOS (Y SABER SI ESTOY APUNTADO)
+
+// LEER EVENTOS (GET)
 
 if ($metodo === 'GET') {
     try {
-        // Obtenemos todos los eventos + calculamos si el usuario actual está apuntado (1 o 0) + contamos aforo
         $sql = "SELECT e.*, 
                 IF(a.id_usuario IS NOT NULL, 1, 0) AS apuntado,
                 (SELECT COUNT(*) FROM eventos_asistentes WHERE id_evento = e.id) AS asistentes_actuales
@@ -43,72 +43,88 @@ if ($metodo === 'GET') {
         echo json_encode(["estado" => "exito", "eventos" => $eventos]);
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(["estado" => "error", "mensaje" => "Error al cargar eventos."]);
+        echo json_encode(["estado" => "error", "mensaje" => "Error al cargar eventos: " . $e->getMessage()]);
     }
 }
 
-
-// CREAR EVENTO O APUNTARSE/DESAPUNTARSE
-
 elseif ($metodo === 'POST') {
-    // Leemos el JSON enviado por React
     $datos = json_decode(file_get_contents("php://input"), true);
     $accion = $datos['accion'] ?? '';
 
+    // --- LÓGICA DE ASISTENCIA ---
     if ($accion === 'toggle_asistencia') {
-        $id_evento = $datos['id_evento'] ?? null;
+        $id_evento = intval($datos['id_evento'] ?? 0);
         if (!$id_evento) exit();
 
         try {
-            // Comprobamos si ya está apuntado
-            $check = $pdo->prepare("SELECT * FROM eventos_asistentes WHERE id_evento = :id_evento AND id_usuario = :id_usuario");
-            $check->execute([':id_evento' => $id_evento, ':id_usuario' => $usuario_id]);
+            // 🛡️ SEGURIDAD: INICIO DE TRANSACCIÓN PARA EVITAR RACE CONDITIONS
+            $pdo->beginTransaction();
+
+            // CORRECCIÓN: Buscamos * en lugar de id porque la tabla intermedia no suele tener columna id propia
+            $check = $pdo->prepare("SELECT * FROM eventos_asistentes WHERE id_evento = ? AND id_usuario = ? FOR UPDATE");
+            $check->execute([$id_evento, $usuario_id]);
 
             if ($check->rowCount() > 0) {
-                // Si ya está apuntado -> Lo borramos (Desapuntarse)
-                $del = $pdo->prepare("DELETE FROM eventos_asistentes WHERE id_evento = :id_evento AND id_usuario = :id_usuario");
-                $del->execute([':id_evento' => $id_evento, ':id_usuario' => $usuario_id]);
+                // DESAPUNTARSE
+                $del = $pdo->prepare("DELETE FROM eventos_asistentes WHERE id_evento = ? AND id_usuario = ?");
+                $del->execute([$id_evento, $usuario_id]);
+
+                $pdo->commit(); // Confirmamos borrado
                 echo json_encode(["estado" => "exito", "mensaje" => "Te has desapuntado del evento.", "apuntado" => false]);
             } else {
-                // Si no está apuntado -> Lo insertamos (Apuntarse)
-                $ins = $pdo->prepare("INSERT INTO eventos_asistentes (id_evento, id_usuario) VALUES (:id_evento, :id_usuario)");
-                $ins->execute([':id_evento' => $id_evento, ':id_usuario' => $usuario_id]);
+                // APUNTARSE: Comprobamos aforo real en el servidor
+                $stmtAforo = $pdo->prepare("SELECT aforo_maximo, (SELECT COUNT(*) FROM eventos_asistentes WHERE id_evento = ?) as actuales FROM eventos WHERE id = ? FOR UPDATE");
+                $stmtAforo->execute([$id_evento, $id_evento]);
+                $info = $stmtAforo->fetch(PDO::FETCH_ASSOC);
 
-                // ========================================================
-                // NUEVO: CREAR NOTIFICACIÓN AL APUNTARSE
-                // ========================================================
-                // 1. Conseguimos el título del evento
-                $stmtEvento = $pdo->prepare("SELECT titulo FROM eventos WHERE id = :id_evento");
-                $stmtEvento->execute([':id_evento' => $id_evento]);
+                // Si hay límite de aforo y ya está lleno, cancelamos la transacción
+                if ($info['aforo_maximo'] !== null && $info['actuales'] >= $info['aforo_maximo']) {
+                    $pdo->rollBack();
+                    http_response_code(403);
+                    echo json_encode(["estado" => "error", "mensaje" => "Lo sentimos, el evento está lleno."]);
+                    exit();
+                }
+
+                // Insertamos asistencia
+                $ins = $pdo->prepare("INSERT INTO eventos_asistentes (id_evento, id_usuario) VALUES (?, ?)");
+                $ins->execute([$id_evento, $usuario_id]);
+
+                // Notificación
+                $stmtEvento = $pdo->prepare("SELECT titulo FROM eventos WHERE id = ?");
+                $stmtEvento->execute([$id_evento]);
                 $tituloEvento = $stmtEvento->fetchColumn();
 
-                // 2. Insertamos la notificación
                 $mensaje = "Has reservado tu plaza correctamente para el evento: " . $tituloEvento . ". ¡Pásalo genial!";
-                $stmtNotif = $pdo->prepare("INSERT INTO notificaciones (id_usuario, titulo, mensaje, icono) VALUES (:id_usuario, :titulo_notif, :mensaje, :icono)");
+                $stmtNotif = $pdo->prepare("INSERT INTO notificaciones (id_usuario, titulo, mensaje, icono) VALUES (?, ?, ?, ?)");
                 $stmtNotif->execute([
-                    ':id_usuario' => $usuario_id,
-                    ':titulo_notif' => "¡Plaza Confirmada!",
-                    ':mensaje' => $mensaje,
-                    ':icono' => "bi-ticket-perforated-fill"
+                    $usuario_id,
+                    "¡Plaza Confirmada!",
+                    $mensaje,
+                    "bi-ticket-perforated-fill"
                 ]);
-                // ========================================================
 
+                $pdo->commit(); // Confirmamos todos los cambios (apuntado + notificación)
                 echo json_encode(["estado" => "exito", "mensaje" => "¡Plaza reservada con éxito!", "apuntado" => true]);
             }
-        } catch (PDOException $e) {
-            echo json_encode(["estado" => "error", "mensaje" => "Error al gestionar asistencia."]);
+        } catch (Exception $e) {
+            // Si algo falla, deshacemos la transacción y mostramos el error EXACTO para poder arreglarlo
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            http_response_code(500);
+            echo json_encode(["estado" => "error", "mensaje" => "Fallo en la BD: " . $e->getMessage()]);
         }
     }
 
+    // --- LÓGICA DE CREAR EVENTO ---
     elseif ($accion === 'crear_evento') {
-        // Lógica para crear un evento nuevo en la DB
         $titulo = trim($datos['titulo']);
         $descripcion = trim($datos['descripcion']);
         $fecha = $datos['fecha'];
         $ubicacion = trim($datos['ubicacion']);
         $tipo = $datos['tipo'];
         $aforo = !empty($datos['aforo_maximo']) ? intval($datos['aforo_maximo']) : null;
-        $imagen_url = !empty($datos['imagen_url']) ? trim($datos['imagen_url']) : 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800'; // Default
+        $imagen_url = !empty($datos['imagen_url']) ? trim($datos['imagen_url']) : 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800';
 
         if ($titulo && $fecha && $ubicacion && $tipo) {
             try {
@@ -120,9 +136,11 @@ elseif ($metodo === 'POST') {
                 ]);
                 echo json_encode(["estado" => "exito", "mensaje" => "¡Evento creado con éxito!"]);
             } catch (PDOException $e) {
-                echo json_encode(["estado" => "error", "mensaje" => "Error al guardar el evento."]);
+                http_response_code(500);
+                echo json_encode(["estado" => "error", "mensaje" => "Error al guardar el evento: " . $e->getMessage()]);
             }
         } else {
+            http_response_code(400);
             echo json_encode(["estado" => "error", "mensaje" => "Faltan campos obligatorios."]);
         }
     }

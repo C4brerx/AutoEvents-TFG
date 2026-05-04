@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import NotificationBell from './NotificationBell'; // <-- IMPORTAMOS LA CAMPANITA REAL
+import NotificationBell from './NotificationBell';
 
 function Navbar({ usuario, seccionActiva, setSeccionActiva, onLogout }) {
     const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
     const [menuUsuarioAbierto, setMenuUsuarioAbierto] = useState(false);
 
-    // Comprobamos si el usuario tiene foto. Si no, usamos null para poner el icono por defecto.
     const avatarUrl = usuario.foto_perfil
         ? `http://localhost/autoevents/backend/uploads/perfiles/${usuario.foto_perfil}`
         : null;
@@ -36,14 +35,41 @@ function Navbar({ usuario, seccionActiva, setSeccionActiva, onLogout }) {
                                 <i className="bi bi-car-front me-1"></i> Mi Garaje
                             </span>
                         </li>
+                        <li className="nav-item">
+                            <span className={`nav-link cursor-pointer ${seccionActiva === 'comunidad' ? 'active text-white fw-bold' : ''}`} onClick={() => { setSeccionActiva('comunidad'); setMenuMovilAbierto(false); }}>
+                                <i className="bi bi-people me-1"></i> Comunidad
+                            </span>
+                        </li>
+                        <li className="nav-item">
+                            <span className={`nav-link cursor-pointer ${seccionActiva === 'tienda' ? 'active text-white fw-bold' : ''}`} onClick={() => { setSeccionActiva('tienda'); setMenuMovilAbierto(false); }}>
+                                <i className="bi bi-shop me-1"></i> Tienda
+                            </span>
+                        </li>
                     </ul>
 
                     {/* ZONA DE USUARIO Y NOTIFICACIONES */}
                     <div className="d-flex align-items-center mt-2 mt-lg-0 position-relative gap-2">
 
-                        {/* ==================================================== */}
-                        {/* AQUÍ INYECTAMOS LA CAMPANITA FUNCIONAL */}
-                        {/* ==================================================== */}
+                        {/* BOTÓN PANEL ADMIN (Solo admin) */}
+                        {usuario && usuario.rol === 'admin' && (
+                            <button
+                                onClick={() => { setSeccionActiva('admin'); setMenuMovilAbierto(false); }}
+                                className={`btn btn-outline-warning fw-bold d-flex align-items-center ${seccionActiva === 'admin' ? 'active' : ''}`}
+                            >
+                                👑 <span className="d-none d-md-inline ms-1">Panel Admin</span>
+                            </button>
+                        )}
+
+                        {/* BOTÓN BANDEJA DE ENTRADA (CHATS) */}
+                        <button
+                            className={`btn d-flex align-items-center transition-all ${seccionActiva === 'mensajes' ? 'btn-danger text-white shadow' : 'btn-dark border border-secondary text-white-50 hover-text-white'}`}
+                            onClick={() => { setSeccionActiva('mensajes'); setMenuMovilAbierto(false); }}
+                            title="Mis Mensajes"
+                        >
+                            <i className="bi bi-envelope-fill"></i>
+                        </button>
+
+                        {/* CAMPANA DE NOTIFICACIONES */}
                         <NotificationBell />
 
                         {/* BOTÓN PRINCIPAL DE USUARIO */}
@@ -53,13 +79,11 @@ function Navbar({ usuario, seccionActiva, setSeccionActiva, onLogout }) {
                             style={{ minWidth: '180px' }}
                         >
                             <div className="d-flex align-items-center position-relative">
-                                {/* Muestra la foto real o el icono */}
                                 {avatarUrl ? (
                                     <img src={avatarUrl} alt="Perfil" className="rounded-circle me-2 object-fit-cover border border-secondary" style={{ width: '32px', height: '32px' }} />
                                 ) : (
                                     <i className="bi bi-person-circle me-2 text-secondary fs-4 align-middle"></i>
                                 )}
-
                                 <span className="fw-bold text-truncate" style={{ maxWidth: '110px' }}>{usuario.nombre}</span>
                             </div>
                             <i className={`bi bi-chevron-${menuUsuarioAbierto ? 'up' : 'down'} ms-2 text-secondary small`}></i>
@@ -68,26 +92,19 @@ function Navbar({ usuario, seccionActiva, setSeccionActiva, onLogout }) {
                         {/* MENÚ DE USUARIO DESPLEGABLE */}
                         {menuUsuarioAbierto && (
                             <div
-                                className="glass-card mt-2 border border-secondary shadow-lg p-3 rounded-3 fade-in"
-                                style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    right: '0',
-                                    minWidth: '220px',
-                                    zIndex: 9999,
-                                    backgroundColor: '#1a1a1a'
-                                }}
+                                className="ae-user-dropdown fade-in position-absolute"
+                                style={{ top: '110%', right: '0', minWidth: '220px', zIndex: 9999 }}
                             >
                                 <div className="d-grid gap-2">
                                     <button
-                                        className="btn btn-outline-light text-start fw-bold shadow-sm py-2"
+                                        className="btn btn-outline-light text-start fw-bold py-2 px-3"
                                         onClick={() => { setSeccionActiva('perfil'); setMenuUsuarioAbierto(false); }}
                                     >
                                         <i className="bi bi-person-badge me-2"></i> Mi Perfil
                                     </button>
 
                                     <button
-                                        className="btn btn-danger text-start fw-bold shadow-sm py-2 mt-1"
+                                        className="btn btn-danger text-start fw-bold py-2 px-3"
                                         onClick={onLogout}
                                     >
                                         <i className="bi bi-power me-2"></i> Cerrar Sesión

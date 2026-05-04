@@ -1,8 +1,6 @@
 <?php
-// 1. INICIAR SESIÓN OBLIGATORIO
 session_start();
 
-// 2. CABECERAS CORS RESTRINGIDAS
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -14,18 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// 3. SEGURIDAD: COMPROBAR SESIÓN
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(["estado" => "error", "mensaje" => "No autorizado para usar la IA."]);
     exit();
 }
 
-// 4. RATE LIMITING (Límite de 5 peticiones por minuto por usuario)
 if (!isset($_SESSION['ia_requests'])) {
     $_SESSION['ia_requests'] = [];
 }
-// Filtramos para quedarnos solo con las peticiones de los últimos 60 segundos
 $_SESSION['ia_requests'] = array_filter($_SESSION['ia_requests'], function($timestamp) {
     return ($timestamp > time() - 60);
 });
@@ -35,7 +30,6 @@ if (count($_SESSION['ia_requests']) >= 5) {
     echo json_encode(["estado" => "error", "mensaje" => "Has superado el límite de consultas. Espera un minuto."]);
     exit();
 }
-// Registramos esta nueva petición
 $_SESSION['ia_requests'][] = time();
 
 
@@ -46,7 +40,6 @@ if ($metodo === 'POST') {
 
     if (!empty($datos->marca) && !empty($datos->modelo)) {
 
-        // 5. DEFENSA CONTRA PROMPT INJECTION (Sanitización)
         $marca = htmlspecialchars(strip_tags($datos->marca));
         $modelo = htmlspecialchars(strip_tags($datos->modelo));
         $sintoma = isset($datos->sintoma) ? htmlspecialchars(strip_tags(trim($datos->sintoma))) : "";
@@ -92,7 +85,6 @@ if ($metodo === 'POST') {
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($cuerpo));
 
-        // 6. ACTIVAR VERIFICACIÓN SSL (Como pidió el profesor)
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
         $respuesta_json = curl_exec($ch);

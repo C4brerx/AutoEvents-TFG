@@ -24,7 +24,6 @@ $usuario_id = $_SESSION['user_id'];
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 
-// 1. LEER NOTIFICACIONES (GET)
 
 if ($metodo === 'GET') {
     try {
@@ -49,7 +48,6 @@ if ($metodo === 'GET') {
 }
 
 
-// 2. MARCAR COMO LEÍDAS (POST)
 
 elseif ($metodo === 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);

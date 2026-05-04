@@ -20,9 +20,9 @@ if (!isset($_SESSION['user_id'])) {
 $usuario_id = $_SESSION['user_id'];
 
 try {
-    // =======================================================
+
     // CORRECCIÓN: Aquí ponemos 'usuario_id' para la tabla vehiculos
-    // =======================================================
+
     $stmtCoches = $pdo->prepare("SELECT COUNT(*) FROM vehiculos WHERE usuario_id = ?");
     $stmtCoches->execute([$usuario_id]);
     $total_coches = (int) $stmtCoches->fetchColumn();
@@ -32,7 +32,6 @@ try {
     $stmtEventos->execute([$usuario_id]);
     $total_eventos = (int) $stmtEventos->fetchColumn();
 
-    // 3. MATEMÁTICAS DE VIDEOJUEGO (Sistema de XP)
     $xp_por_coche = 500;
     $xp_por_evento = 200;
     $xp_total = ($total_coches * $xp_por_coche) + ($total_eventos * $xp_por_evento);
@@ -40,11 +39,9 @@ try {
     // Calculamos el Nivel (Cada 1000 XP es 1 nivel. Empezamos en Nivel 1)
     $nivel = floor($xp_total / 1000) + 1;
 
-    // Calculamos el porcentaje para la barra de progreso (lo que sobra del múltiplo de 1000)
     $xp_actual_nivel = $xp_total % 1000;
     $porcentaje_progreso = ($xp_actual_nivel / 1000) * 100;
 
-    // 4. DESBLOQUEO DE INSIGNIAS
     $logros = [];
 
     // Insignias por Garaje
@@ -70,7 +67,6 @@ try {
         ]
     ]);
 } catch (Exception $e) {
-    // Si falla algo, que nos escupa el error exacto y no se quede en blanco
     echo json_encode(["estado" => "error", "mensaje" => $e->getMessage()]);
 }
 ?>
