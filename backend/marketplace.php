@@ -11,13 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once 'conexion.php';
+/** @var PDO $pdo */
 
 try {
-    // Buscamos todos los productos
     $stmt = $pdo->query("SELECT * FROM productos ORDER BY id DESC");
     $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Devolvemos el JSON limpio
     echo json_encode([
         "estado" => "exito",
         "total" => count($productos),
@@ -25,8 +24,9 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    // Si hay error en SQL, lo escupimos para saber qué pasa
+    error_log("Fallo SQL en marketplace: " . $e->getMessage()); // Se guarda en el log interno de XAMPP/Apache
+
     http_response_code(500);
-    echo json_encode(["estado" => "error", "mensaje" => "Error de BD: " . $e->getMessage()]);
+    echo json_encode(["estado" => "error", "mensaje" => "Error interno al cargar los productos del marketplace."]);
 }
 ?>

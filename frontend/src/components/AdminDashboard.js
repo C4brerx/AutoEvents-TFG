@@ -5,6 +5,10 @@ import Swal from 'sweetalert2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
+const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL)
+    ? process.env.REACT_APP_API_URL
+    : 'http://localhost/autoevents/backend';
+
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [usuarios, setUsuarios] = useState([]);
@@ -13,11 +17,11 @@ const AdminDashboard = () => {
     const cargarDatos = async () => {
         try {
             // Cargar Estadísticas
-            const resStats = await fetch('http://localhost/autoevents/backend/admin_stats.php', { credentials: 'include' });
+            const resStats = await fetch(`${API_URL}/admin_stats.php`, { credentials: 'include' });
             const dataStats = await resStats.json();
 
             // Cargar Usuarios
-            const resUsers = await fetch('http://localhost/autoevents/backend/admin_usuarios.php', { credentials: 'include' });
+            const resUsers = await fetch(`${API_URL}/admin_usuarios.php`, { credentials: 'include' });
             const dataUsers = await resUsers.json();
 
             if (dataStats.estado === 'exito') setStats(dataStats);
@@ -58,16 +62,21 @@ const AdminDashboard = () => {
             }
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const res = await fetch('http://localhost/autoevents/backend/admin_usuarios.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(result.value),
-                    credentials: 'include'
-                });
-                if (res.ok) {
-                    Swal.fire({ icon: 'success', title: 'Actualizado', background: '#1a1a1a', color: '#fff', timer: 1500, showConfirmButton: false });
-                    cargarDatos();
-                }
+                try {
+                    const res = await fetch(`${API_URL}/admin_usuarios.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(result.value),
+                        credentials: 'include'
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.estado === 'exito') {
+                        Swal.fire({ icon: 'success', title: 'Actualizado', background: '#1a1a1a', color: '#fff', timer: 1500, showConfirmButton: false });
+                        cargarDatos();
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Atención', text: data.mensaje || 'Error al actualizar', background: '#1a1a1a', color: '#fff' });
+                    }
+                } catch (error) { console.error("Fallo de red:", error); }
             }
         });
     };
@@ -83,74 +92,72 @@ const AdminDashboard = () => {
     if (loading) return <div className="text-center text-light mt-5"><h4>Cargando panel...</h4></div>;
 
     const dataMarcas = {
-        labels: stats.grafico_marcas.map(item => item.marca),
-        datasets: [{
-            label: 'Vehículos',
-            data: stats.grafico_marcas.map(item => item.cantidad),
-            backgroundColor: '#ff4d4d',
-            borderRadius: 8
-        }],
+        labels: stats?.grafico_marcas?.map(item => item.marca) || [],
+        datasets: [{ label: 'Vehículos', data: stats?.grafico_marcas?.map(item => item.cantidad) || [], backgroundColor: '#ff4d4d', borderRadius: 8 }],
     };
 
     const optionsBar = {
         responsive: true,
         plugins: { legend: { display: false } },
-        scales: {
-            y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-            x: { ticks: { color: '#ffffff' }, grid: { display: false } }
-        }
+        scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { ticks: { color: '#ffffff' }, grid: { display: false } } }
     };
 
     return (
         <div className="container mt-4 mb-5 fade-in">
-            <h2 className="text-light fw-bold mb-4">👑 Panel de Control <span className="text-ae-theme"></span></h2>
+            <h2 className="text-light fw-bold mb-4">👑 Panel de Control</h2>
 
-            {/* MÉTRICAS (Texto corregido a text-white) */}
             <div className="row g-4 mb-5">
-                {[
-                    { t: "Usuarios", n: stats.tarjetas.usuarios, c: "bi-people" },
-                    { t: "Coches", n: stats.tarjetas.vehiculos, c: "bi-car-front" },
-                    { t: "Eventos", n: stats.tarjetas.eventos, c: "bi-calendar-event" },
-                    { t: "Reservas", n: stats.tarjetas.asistencias, c: "bi-ticket-perforated" }
-                ].map((card, i) => (
-                    <div className="col-md-3" key={i}>
-                        <div className="p-4 text-center shadow" style={glassStyle}>
-                            <i className={`${card.c} fs-1 text-ae-theme mb-2 d-block`}></i>
-                            <h5 className="text-white opacity-75 small text-uppercase fw-bold">{card.t}</h5>
-                            <h1 className="fw-bold m-0 text-white">{card.n}</h1>
-                        </div>
-                    </div>
+                {[ { t: "Usuarios", n: stats?.tarjetas?.usuarios || 0, c: "bi-people" }, { t: "Coches", n: stats?.tarjetas?.vehiculos || 0, c: "bi-car-front" }, { t: "Eventos", n: stats?.tarjetas?.eventos || 0, c: "bi-calendar-event" }, { t: "Reservas", n: stats?.tarjetas?.asistencias || 0, c: "bi-ticket-perforated" } ].map((card, i) => (
+                    <div className="col-md-3" key={i}><div className="p-4 text-center shadow" style={glassStyle}><i className={`${card.c} fs-1 text-ae-theme mb-2 d-block`}></i><h5 className="text-white opacity-75 small text-uppercase fw-bold">{card.t}</h5><h1 className="fw-bold m-0 text-white">{card.n}</h1></div></div>
                 ))}
             </div>
 
-            {/* GRÁFICOS */}
             <div className="row g-4 mb-5">
-                <div className="col-md-7">
-                    <div className="p-4 h-100" style={glassStyle}>
-                        <h5 className="text-white fw-bold mb-4 text-center">Top 5 Marcas en Garajes</h5>
-                        <Bar data={dataMarcas} options={optionsBar} />
-                    </div>
-                </div>
-                <div className="col-md-5">
-                    <div className="p-4 h-100 text-center" style={glassStyle}>
-                        <h5 className="text-white fw-bold mb-4">Tipos de Eventos</h5>
-                        <Doughnut data={{
-                            labels: stats.grafico_tipos.map(i => i.tipo),
-                            datasets: [{
-                                data: stats.grafico_tipos.map(i => i.cantidad),
-                                backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#6610f2'],
-                                borderWidth: 0
-                            }]
-                        }} options={{ plugins: { legend: { labels: { color: '#fff' }, position: 'bottom' } } }} />
-                    </div>
-                </div>
+                <div className="col-md-7"><div className="p-4 h-100" style={glassStyle}><h5 className="text-white fw-bold mb-4 text-center">Top 5 Marcas en Garajes</h5><Bar data={dataMarcas} options={optionsBar} /></div></div>
+                <div className="col-md-5"><div className="p-4 h-100 text-center" style={glassStyle}><h5 className="text-white fw-bold mb-4">Tipos de Eventos</h5><Doughnut data={{ labels: stats?.grafico_tipos?.map(i => i.tipo) || [], datasets: [{ data: stats?.grafico_tipos?.map(i => i.cantidad) || [], backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#6610f2'], borderWidth: 0 }] }} options={{ plugins: { legend: { labels: { color: '#fff' }, position: 'bottom' } } }} /></div></div>
             </div>
 
+            {/* ========================================================================================= */}
             {/* GESTIÓN DE USUARIOS */}
+            {/* ========================================================================================= */}
             <div className="p-4 shadow-lg mb-5" style={glassStyle}>
-                <h4 className="text-light fw-bold mb-4"><i className="bi bi-person-gear me-2 text-ae-theme"></i>Gestión de Usuarios Registrados</h4>
+                <h4 className="text-light fw-bold mb-4"><i className="bi bi-person-gear me-2 text-ae-theme"></i>Gestión de Usuarios</h4>
 
-                <div className="ae-table-container table-responsive">
+                {/* --- MODO MÓVIL (VISIBLE SOLO EN < lg) --- */}
+                <div className="d-block d-lg-none ae-user-list-mobile">
+                    {usuarios.map(u => (
+                        <div key={u.id} className="p-3 mb-3 border border-secondary border-opacity-50 bg-black bg-opacity-25 rounded-3 shadow-sm fade-in">
+                            <div className="row g-2 mb-2">
+                                <div className="col-4 text-secondary text-capitalize small fw-bold">ID:</div>
+                                <div className="col-8 text-secondary fw-bold">#{u.id}</div>
+                            </div>
+                            <div className="row g-2 mb-2">
+                                <div className="col-4 text-secondary text-capitalize small fw-bold">Nombre:</div>
+                                <div className="col-8 text-light fw-bold text-truncate">{u.nombre}</div>
+                            </div>
+                            <div className="row g-2 mb-2">
+                                <div className="col-4 text-secondary text-capitalize small fw-bold">Email:</div>
+                                <div className="col-8 text-white-50 text-truncate">{u.email}</div>
+                            </div>
+                            <div className="row g-2 mb-3 align-items-center">
+                                <div className="col-4 text-secondary text-capitalize small fw-bold">Rol:</div>
+                                <div className="col-8">
+                                    <span className={`badge px-3 py-1 ${u.rol === 'admin' ? 'bg-warning text-dark' : 'bg-dark border border-secondary text-light'}`}>
+                                        {u.rol.toUpperCase()}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="text-end">
+                                <button className="btn btn-warning btn-sm text-dark fw-bold px-4 rounded-pill shadow" onClick={() => editarUsuario(u)}>
+                                    <i className="bi bi-pencil-square me-1"></i> Editar Piloto
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* --- MODO PC (VISIBLE SOLO EN >= lg) --- */}
+                <div className="ae-table-container d-none d-lg-block">
                     <table className="table ae-table align-middle">
                         <thead>
                         <tr>

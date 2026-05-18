@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit(0);
 require_once 'conexion.php';
 /** @var PDO $pdo */
 
-// 1. SEGURIDAD: Comprobar sesión
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(["estado" => "error", "mensaje" => "No autorizado."]);
@@ -24,7 +23,6 @@ if (!isset($_SESSION['user_id'])) {
 $usuario_id = $_SESSION['user_id'];
 
 try {
-    // 2. SEGURIDAD: Comprobar que el usuario es ADMIN
     $stmtAdmin = $pdo->prepare("SELECT rol FROM usuarios WHERE id = ?");
     $stmtAdmin->execute([$usuario_id]);
     $rol = $stmtAdmin->fetchColumn();
@@ -36,13 +34,11 @@ try {
     }
 
 
-    // Tarjetas principales
     $total_usuarios = $pdo->query("SELECT COUNT(*) FROM usuarios")->fetchColumn();
     $total_vehiculos = $pdo->query("SELECT COUNT(*) FROM vehiculos")->fetchColumn();
     $total_eventos = $pdo->query("SELECT COUNT(*) FROM eventos")->fetchColumn();
-    $total_asistencias = $pdo->query("SELECT COUNT(*) FROM eventos_asistentes")->fetchColumn();
+    $total_asistencias = $pdo->query("SELECT COUNT(*) FROM evento_asistentes")->fetchColumn();
 
-    // Gráfico 1: Marcas de coche más populares
     $stmtMarcas = $pdo->query("SELECT marca, COUNT(*) as cantidad FROM vehiculos GROUP BY marca ORDER BY cantidad DESC LIMIT 5");
     $grafico_marcas = $stmtMarcas->fetchAll(PDO::FETCH_ASSOC);
 
@@ -62,7 +58,8 @@ try {
     ]);
 
 } catch (PDOException $e) {
+    error_log("Fallo SQL en admin_stats: " . $e->getMessage()); // <-- Añadido el log interno
     http_response_code(500);
-    echo json_encode(["estado" => "error", "mensaje" => "Error al obtener estadísticas."]);
+    echo json_encode(["estado" => "error", "mensaje" => "Error al obtener estadísticas."]); // <-- Mensaje seguro
 }
 ?>

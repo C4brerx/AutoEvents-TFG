@@ -11,24 +11,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit();
 require_once 'conexion.php';
 /** @var PDO $pdo */
 
+session_set_cookie_params([
+    'lifetime' => 86400,
+    'path' => '/',
+    'domain' => 'localhost',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 
-$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : 'Sin nombre';
-$descripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : '';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['usuario_id'])) {
+    http_response_code(401);
+    echo json_encode(["estado" => "error", "mensaje" => "No autorizado. Inicia sesión para vender."]);
+    exit();
+}
+
+$vendedor_id = $_SESSION['usuario_id'];
+$vendedor_nombre = isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Usuario';
+
+$nombre = isset($_POST['nombre']) ? htmlspecialchars(strip_tags($_POST['nombre']), ENT_QUOTES, 'UTF-8') : 'Sin nombre';
+$descripcion = isset($_POST['descripcion']) ? htmlspecialchars(strip_tags($_POST['descripcion']), ENT_QUOTES, 'UTF-8') : '';
 $precio = isset($_POST['precio']) ? floatval($_POST['precio']) : 0.00;
-$categoria = isset($_POST['categoria']) ? $_POST['categoria'] : 'Accesorios';
-$vendedor_id = isset($_POST['vendedor_id']) ? $_POST['vendedor_id'] : 1;
-$vendedor_nombre = isset($_POST['vendedor_nombre']) ? $_POST['vendedor_nombre'] : 'Usuario';
+$categoria = isset($_POST['categoria']) ? htmlspecialchars(strip_tags($_POST['categoria']), ENT_QUOTES, 'UTF-8') : 'Accesorios';
 $marca_compatible = 'Todas';
 
+$protocolo = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$dominio = $_SERVER['HTTP_HOST'];
+$ruta_base = $protocolo . "://" . $dominio . "/autoevents/backend/uploads/";
 
 $imagen_url = 'https://picsum.photos/seed/' . time() . '/600/400';
-if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-    // Limpiamos el nombre del archivo para que no de errores
-    $nombreArchivo = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "", basename($_FILES['imagen']['name']));
-    $rutaDestino = __DIR__ . '/uploads/' . $nombreArchivo;
 
-    if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino)) {
-        $imagen_url = 'http://localhost/autoevents/backend/uploads/' . $nombreArchivo;
+$directorio_subida = __DIR__ . '/uploads/';
+if (!is_dir($directorio_subida)) {
+    mkdir($directorio_subida, 0755, true);
+}
+
+if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+    $tmp_name = $_FILES['imagen']['tmp_name'];
+
+    if ($_FILES['imagen']['size'] > 5 * 1024 * 1024) {
+        http_response_code(400);
+        echo json_encode(["estado" => "error", "mensaje" => "La imagen es demasiado pesada. Máximo 5MB."]);
+        exit();
+    }
+
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $tmp_name);
+    finfo_close($finfo);
+
+    $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!in_array($mimeType, $tiposPermitidos)) {
+        http_response_code(400);
+        echo json_encode(["estado" => "error", "mensaje" => "Formato no permitido. Sube un JPG, PNG o WEBP."]);
+        exit();
+    }
+
+    $extensiones_validas = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp'
+    ];
+    $extensionSegura = $extensiones_validas[$mimeType];
+
+    $nombreArchivo = bin2hex(random_bytes(16)) . '.' . $extensionSegura;
+    $rutaDestino = $directorio_subida . $nombreArchivo;
+
+    if (move_uploaded_file($tmp_name, $rutaDestino)) {
+        $imagen_url = $ruta_base . $nombreArchivo;
+    } else {
+        http_response_code(500);
+        echo json_encode(["estado" => "error", "mensaje" => "Error al guardar el archivo en el servidor."]);
+        exit();
     }
 }
 
@@ -38,9 +95,12 @@ try {
     if ($stmt->execute([$nombre, $descripcion, $precio, $imagen_url, $categoria, $marca_compatible, $vendedor_id, $vendedor_nombre])) {
         echo json_encode(["estado" => "exito", "mensaje" => "Artículo publicado correctamente."]);
     } else {
-        echo json_encode(["estado" => "error", "mensaje" => "Error interno en BD."]);
+        http_response_code(500);
+        echo json_encode(["estado" => "error", "mensaje" => "Error interno al guardar el artículo."]);
     }
 } catch (PDOException $e) {
-    echo json_encode(["estado" => "error", "mensaje" => "Fallo SQL: " . $e->getMessage()]);
+    error_log("Fallo SQL en subir_producto: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(["estado" => "error", "mensaje" => "Error interno en la base de datos al publicar."]);
 }
 ?>

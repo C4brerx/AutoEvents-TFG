@@ -25,13 +25,11 @@ require_once 'conexion.php';
 
 $datos = json_decode(file_get_contents("php://input"));
 
-usleep(1000000);
 
 if (!empty($datos->email) && !empty($datos->password)) {
     try {
         $email_limpio = filter_var(trim($datos->email), FILTER_SANITIZE_EMAIL);
 
-        // ¡AQUÍ ESTÁ EL CAMBIO! Añadimos "rol" al SELECT
         $sql = "SELECT id, nombre, email, password, intentos_fallidos, bloqueado_hasta, rol FROM usuarios WHERE email = :email";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':email' => $email_limpio]);
@@ -39,7 +37,6 @@ if (!empty($datos->email) && !empty($datos->password)) {
 
         if ($usuario) {
 
-            // 1. ¿El usuario está actualmente bloqueado?
             if ($usuario['bloqueado_hasta'] !== null) {
                 $tiempo_actual = time();
                 $tiempo_bloqueo = strtotime($usuario['bloqueado_hasta']);
@@ -68,7 +65,11 @@ if (!empty($datos->email) && !empty($datos->password)) {
                 }
 
                 session_regenerate_id(true);
+
                 $_SESSION['user_id'] = $usuario['id'];
+                $_SESSION['usuario_id'] = $usuario['id'];
+                $_SESSION['rol'] = $usuario['rol'];
+                $_SESSION['nombre'] = $usuario['nombre'];
 
                 http_response_code(200);
                 echo json_encode([
@@ -103,7 +104,7 @@ if (!empty($datos->email) && !empty($datos->password)) {
         }
 
     } catch (PDOException $e) {
-        error_log($e->getMessage());
+        error_log("Fallo SQL en login: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(["estado" => "error", "mensaje" => "Error interno en el servidor."]);
     }

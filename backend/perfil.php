@@ -1,6 +1,18 @@
 <?php
 // backend/perfil.php
-session_start();
+
+session_set_cookie_params([
+    'lifetime' => 86400,
+    'path' => '/',
+    'domain' => 'localhost',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Credentials: true");
@@ -30,7 +42,6 @@ if (!is_dir($directorio_subida)) {
     mkdir($directorio_subida, 0755, true);
 }
 
-// OBTENER DATOS DEL PERFIL
 if ($metodo === 'GET') {
     try {
         $stmt = $pdo->prepare("SELECT id, nombre, email, biografia, foto_perfil FROM usuarios WHERE id = :id");
@@ -39,12 +50,12 @@ if ($metodo === 'GET') {
 
         echo json_encode(["estado" => "exito", "perfil" => $perfil]);
     } catch (PDOException $e) {
+        error_log("Fallo SQL en perfil (GET): " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["estado" => "error", "mensaje" => "Error interno."]);
+        echo json_encode(["estado" => "error", "mensaje" => "Error interno al cargar los datos."]);
     }
 }
 
-// ACTUALIZAR PERFIL
 elseif ($metodo === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     $biografia = trim($_POST['biografia'] ?? '');
@@ -56,7 +67,6 @@ elseif ($metodo === 'POST') {
         exit();
     }
 
-    // GESTIÓN DE LA FOTO DE PERFIL
     if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
         $tmpFilePath = $_FILES['foto_perfil']['tmp_name'];
 
@@ -74,6 +84,19 @@ elseif ($metodo === 'POST') {
         $ext = strtolower(pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION));
 
         if (in_array($mime_type, $mimes_permitidos) && in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+
+            try {
+                $stmtFoto = $pdo->prepare("SELECT foto_perfil FROM usuarios WHERE id = ?");
+                $stmtFoto->execute([$usuario_id]);
+                $fotoAntigua = $stmtFoto->fetchColumn();
+
+                if ($fotoAntigua && file_exists($directorio_subida . $fotoAntigua)) {
+                    unlink($directorio_subida . $fotoAntigua);
+                }
+            } catch (Exception $e) {
+                error_log("No se pudo borrar la foto antigua: " . $e->getMessage());
+            }
+
             $nombre_foto = uniqid('avatar_') . '_' . bin2hex(random_bytes(2)) . '.' . $ext;
             move_uploaded_file($tmpFilePath, $directorio_subida . $nombre_foto);
         } else {
@@ -85,11 +108,9 @@ elseif ($metodo === 'POST') {
 
     try {
         if ($nombre_foto) {
-            // Actualiza también la foto
             $sql = "UPDATE usuarios SET nombre = :nombre, biografia = :biografia, foto_perfil = :foto_perfil WHERE id = :id";
             $params = [':nombre' => $nombre, ':biografia' => $biografia, ':foto_perfil' => $nombre_foto, ':id' => $usuario_id];
         } else {
-            // Actualiza solo texto
             $sql = "UPDATE usuarios SET nombre = :nombre, biografia = :biografia WHERE id = :id";
             $params = [':nombre' => $nombre, ':biografia' => $biografia, ':id' => $usuario_id];
         }
@@ -97,15 +118,15 @@ elseif ($metodo === 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 
-        // Devolvemos los datos actualizados para que React los refresque al instante
         $stmt_refresh = $pdo->prepare("SELECT id, nombre, email, biografia, foto_perfil FROM usuarios WHERE id = :id");
         $stmt_refresh->execute([':id' => $usuario_id]);
         $perfil_actualizado = $stmt_refresh->fetch(PDO::FETCH_ASSOC);
 
         echo json_encode(["estado" => "exito", "mensaje" => "Perfil actualizado", "perfil" => $perfil_actualizado]);
     } catch (PDOException $e) {
+        error_log("Fallo SQL en perfil (POST): " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["estado" => "error", "mensaje" => "Error al actualizar la base de datos."]);
+        echo json_encode(["estado" => "error", "mensaje" => "Error al actualizar los datos en el servidor."]);
     }
 }
 ?>

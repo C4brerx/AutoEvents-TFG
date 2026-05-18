@@ -15,8 +15,10 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
+    error_log("Error CRÍTICO de conexión a BD: " . $e->getMessage());
+
     header("Content-Type: application/json; charset=UTF-8");
-    echo json_encode(["estado" => "error", "mensaje" => "Error de conexión a la base de datos: " . $e->getMessage()]);
+    echo json_encode(["estado" => "error", "mensaje" => "Error interno del servidor al conectar con la base de datos."]);
     exit;
 }
- ?>
+?>

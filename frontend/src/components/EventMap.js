@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Icono personalizado para las chinchetas (rojo y deportivo)
 const pinIcon = new L.Icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
     iconSize: [35, 35],
@@ -22,15 +21,12 @@ function EventMap({ eventos, onAbrirModal }) {
             setCargandoMapa(true);
             const eventosMapeados = [];
 
-            // CEREBRO: Diccionario guardado en el navegador para no repetir búsquedas
             const diccionarioCiudades = JSON.parse(localStorage.getItem('ae_diccionario_ciudades')) || {};
             let huboNuevasCiudades = false;
 
             for (const evento of eventos) {
-                // Limpiamos la ciudad (ej: "Jarama, Madrid" -> "jarama")
                 const ciudadClave = evento.ubicacion.split(',')[0].trim().toLowerCase();
 
-                // MAGIA: Si ya conocemos la ciudad, la sacamos de la memoria ¡Al instante!
                 if (diccionarioCiudades[ciudadClave]) {
                     eventosMapeados.push({
                         ...evento,
@@ -38,7 +34,6 @@ function EventMap({ eventos, onAbrirModal }) {
                         lng: diccionarioCiudades[ciudadClave].lng
                     });
                 }
-                // Si es nueva, le preguntamos a la API de OpenStreetMap con calma
                 else {
                     try {
                         const respuesta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ciudadClave)}, España&limit=1`);
@@ -50,7 +45,6 @@ function EventMap({ eventos, onAbrirModal }) {
 
                             eventosMapeados.push({ ...evento, lat, lng });
 
-                            // Lo guardamos en el cerebro para la próxima vez
                             diccionarioCiudades[ciudadClave] = { lat, lng };
                             huboNuevasCiudades = true;
                         }
@@ -58,7 +52,6 @@ function EventMap({ eventos, onAbrirModal }) {
                         console.warn(`No se pudo localizar: ${ciudadClave}`);
                     }
 
-                    // Pausa de 1 segundo para que la API gratuita no nos bloquee
                     await new Promise(r => setTimeout(r, 1000));
                 }
             }
@@ -67,7 +60,6 @@ function EventMap({ eventos, onAbrirModal }) {
                 setEventosConCoords(eventosMapeados);
                 setCargandoMapa(false);
 
-                // Guardamos las nuevas ciudades descubiertas
                 if (huboNuevasCiudades) {
                     localStorage.setItem('ae_diccionario_ciudades', JSON.stringify(diccionarioCiudades));
                 }
@@ -96,11 +88,10 @@ function EventMap({ eventos, onAbrirModal }) {
     return (
         <div className="glass-card rounded-4 overflow-hidden border border-secondary shadow-lg fade-in position-relative" style={{ height: '500px', zIndex: 1 }}>
             <MapContainer
-                center={[40.4168, -3.7038]} // Centro de España por defecto
+                center={[40.4168, -3.7038]}
                 zoom={6}
                 style={{ height: '100%', width: '100%', background: '#121212' }}
             >
-                {/* Capa Dark Mode de CARTO (Gratuita y espectacular) */}
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                     attribution='&copy; <a href="https://carto.com/">CARTO</a>'

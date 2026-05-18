@@ -2,7 +2,7 @@
 // backend/registro.php
 
 header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Credentials: true"); // <-- ¡VITAL PARA EVITAR EL ERROR DE CONEXIÓN!
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
@@ -17,8 +17,6 @@ require_once 'conexion.php';
 
 $datos = json_decode(file_get_contents("php://input"));
 
-// Pausa de medio segundo contra bots de spam
-usleep(500000);
 
 if (!empty($datos->nombre) && !empty($datos->email) && !empty($datos->password)) {
 
@@ -58,13 +56,14 @@ if (!empty($datos->nombre) && !empty($datos->email) && !empty($datos->password))
             http_response_code(400);
             echo json_encode(["estado" => "error", "mensaje" => "El email ya está registrado."]);
         } else {
-            error_log($e->getMessage());
+            error_log("Fallo SQL en registro: " . $e->getMessage());
             http_response_code(500);
-            echo json_encode(["estado" => "error", "mensaje" => "Fallo exacto en la BD: " . $e->getMessage()]);
+            echo json_encode(["estado" => "error", "mensaje" => "Error interno al registrar el usuario en la base de datos."]);
         }
     } catch (Exception $e) {
+        error_log("Fallo general en registro: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["estado" => "error", "mensaje" => "Error interno: " . $e->getMessage()]);
+        echo json_encode(["estado" => "error", "mensaje" => "Error inesperado en el servidor."]);
     }
 } else {
     http_response_code(400);

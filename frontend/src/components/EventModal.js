@@ -43,7 +43,6 @@ function EventModal({ evento, onClose, onAsistir, formatearFecha }) {
 
     const ticketData = `https://autoevents.app/portero/validar?ticket=${evento.id}&evento=${encodeURIComponent(evento.titulo)}`;
 
-    // Función para traducir el código del tiempo a un icono y texto
     const obtenerIconoClima = (codigo) => {
         if (codigo === 0) return { icon: 'bi-sun-fill text-warning', text: 'Despejado' };
         if (codigo >= 1 && codigo <= 3) return { icon: 'bi-cloud-sun-fill text-light', text: 'Nublado' };
@@ -89,7 +88,6 @@ function EventModal({ evento, onClose, onAsistir, formatearFecha }) {
                         )}
                     </div>
 
-                    {/* DETALLES DEL EVENTO */}
                     <div className="col-lg-6 p-4 d-flex flex-column bg-dark bg-opacity-50 text-light">
                         <div className="mb-4">
                             <div className="d-flex justify-content-between align-items-start mb-3">
@@ -158,7 +156,6 @@ function EventModal({ evento, onClose, onAsistir, formatearFecha }) {
                     </div>
                 </div>
 
-                {/* PIE DE MODAL */}
                 <div className="p-3 bg-dark border-top border-white-10 bg-opacity-75 d-flex justify-content-between align-items-center">
                     {evento.apuntado == 1 ? (
                         <p className="m-0 text-success fw-bold"><i className="bi bi-check-circle-fill me-2"></i>Ya estás inscrito en este evento</p>

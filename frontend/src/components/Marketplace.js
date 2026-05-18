@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
+const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL)
+    ? process.env.REACT_APP_API_URL
+    : 'http://localhost/autoevents/backend';
+
 const Marketplace = ({ usuario }) => {
     const [productos, setProductos] = useState([]);
     const [misVehiculos, setMisVehiculos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [carrito, setCarrito] = useState([]);
 
-    // Filtros de búsqueda
     const [busqueda, setBusqueda] = useState('');
     const [categoriaActiva, setCategoriaActiva] = useState('Todas');
     const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState('');
-
-    // Estado para controlar la pestaña activa (Tienda vs Usuarios)
     const [modoVenta, setModoVenta] = useState('oficial');
 
     useEffect(() => {
         const cargarDatos = async () => {
             try {
-                const resTienda = await fetch('http://localhost/autoevents/backend/marketplace.php', { credentials: 'include' });
+                // CORRECCIÓN TUTOR: Uso de API_URL
+                const resTienda = await fetch(`${API_URL}/marketplace.php`, { credentials: 'include' });
                 const dataTienda = await resTienda.json();
 
-                const resGaraje = await fetch('http://localhost/autoevents/backend/vehiculos.php', { credentials: 'include' });
+                const resGaraje = await fetch(`${API_URL}/vehiculos.php`, { credentials: 'include' });
                 const dataGaraje = await resGaraje.json();
 
                 if (dataTienda.estado === 'exito') setProductos(dataTienda.productos);
@@ -95,7 +97,7 @@ const Marketplace = ({ usuario }) => {
 
         if (mensaje) {
             try {
-                const res = await fetch('http://localhost/autoevents/backend/mensajes.php', {
+                const res = await fetch(`${API_URL}/mensajes.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ destinatario_id: producto.vendedor_id,remitente_id: usuario ? usuario.id : 1, contenido: `[Sobre ${producto.nombre}]: ${mensaje}`, producto_id: producto.id }),
@@ -146,14 +148,12 @@ const Marketplace = ({ usuario }) => {
                     return false;
                 }
 
-                // Usamos FormData para poder enviar la foto física
                 const formData = new FormData();
                 formData.append('nombre', nombre);
                 formData.append('precio', precio);
                 formData.append('categoria', document.getElementById('swal-categoria').value);
                 formData.append('descripcion', document.getElementById('swal-desc').value);
 
-                // Le pasamos tu nombre real desde React
                 formData.append('vendedor_id', usuario ? usuario.id : 1);
                 formData.append('vendedor_nombre', usuario ? usuario.nombre : 'Usuario Anónimo');
 
@@ -167,9 +167,9 @@ const Marketplace = ({ usuario }) => {
 
         if (formValues) {
             try {
-                const res = await fetch('http://localhost/autoevents/backend/subir_producto.php', {
+                const res = await fetch(`${API_URL}/subir_producto.php`, {
                     method: 'POST',
-                    body: formValues, // Pasamos el formData directamente, sin stringify
+                    body: formValues,
                     credentials: 'include'
                 });
 
@@ -193,7 +193,6 @@ const Marketplace = ({ usuario }) => {
 
     return (
         <div className="fade-in mb-5">
-            {/* CABECERA Y CARRITO */}
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom border-secondary pb-3">
                 <div>
                     <h2 className="fw-bold m-0 text-white"><i className="bi bi-shop me-2 text-danger"></i>AutoParts Marketplace</h2>
@@ -210,7 +209,6 @@ const Marketplace = ({ usuario }) => {
                 </button>
             </div>
 
-            {/* PESTAÑAS (OFICIAL VS SEGUNDA MANO) */}
             <div className="d-flex mb-4 glass-card p-1 rounded-pill" style={{ maxWidth: '400px', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <button
                     className={`btn w-50 rounded-pill fw-bold transition-all ${modoVenta === 'oficial' ? 'btn-danger text-white shadow' : 'text-white-50'}`}
@@ -226,7 +224,6 @@ const Marketplace = ({ usuario }) => {
                 </button>
             </div>
 
-            {/* SECCIÓN MODO AUTODOC (SELECTOR DE VEHÍCULO) */}
             <div className="glass-card p-4 mb-4 shadow-lg rounded-4 ae-autodoc-container">
                 <h5 className="text-white fw-bold mb-3"><i className="bi bi-car-front-fill me-2 text-danger"></i>Busca piezas exactas para tu coche</h5>
                 <div className="row g-3">
@@ -257,7 +254,6 @@ const Marketplace = ({ usuario }) => {
                 </div>
             </div>
 
-            {/* FILTROS DE CATEGORÍA Y BOTÓN VENDER */}
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <div className="d-flex flex-wrap gap-2">
                     {categoriasUnicas.map(cat => (
@@ -271,7 +267,6 @@ const Marketplace = ({ usuario }) => {
                     ))}
                 </div>
 
-                {/* BOTÓN NUEVO: Vender Pieza (Solo en Segunda Mano) */}
                 {modoVenta === 'segunda_mano' && (
                     <button className="btn btn-warning fw-bold px-4 rounded-pill text-dark shadow" onClick={publicarArticulo}>
                         <i className="bi bi-camera me-2"></i> Subir Artículo
@@ -279,7 +274,6 @@ const Marketplace = ({ usuario }) => {
                 )}
             </div>
 
-            {/* RESULTADOS Y LISTA DE PRODUCTOS */}
             <div className="mb-3 text-white-50">
                 Mostrando {productosFiltrados.length} resultados {vehiculoSeleccionado && <span className="text-danger fw-bold">compatibles con {vehiculoSeleccionado}</span>}
             </div>
@@ -298,34 +292,30 @@ const Marketplace = ({ usuario }) => {
                         <div key={producto.id} className="col-md-4 col-lg-3">
                             <div className="card glass-card h-100 border-0 shadow-lg overflow-hidden car-card ae-product-card">
 
-                                {/* Etiqueta de Vendedor (Segunda Mano) */}
                                 {modoVenta === 'segunda_mano' && (
                                     <div className="position-absolute top-0 start-0 m-2 badge bg-dark border border-secondary shadow z-1">
                                         <i className="bi bi-person-circle me-1 text-danger"></i> {producto.vendedor_nombre}
                                     </div>
                                 )}
 
-                                {/* Etiqueta de Compatibilidad */}
                                 {producto.marca_compatible !== 'Todas' && (
                                     <div className="position-absolute top-0 end-0 m-2 badge bg-danger shadow z-1">
                                         Específico {producto.marca_compatible}
                                     </div>
                                 )}
 
-                                {/* Imagen con Sistema Antibug */}
                                 <div className="ae-product-img-container">
                                     <img
                                         src={producto.imagen_url}
                                         alt={producto.nombre}
                                         className="w-100 h-100 object-fit-cover ae-product-img"
                                         onError={(e) => {
-                                            e.target.onerror = null; // Evita bucles
+                                            e.target.onerror = null;
                                             e.target.src = `https://placehold.co/600x400/1a1a1a/e60000?text=Sin+Foto`;
                                         }}
                                     />
                                 </div>
 
-                                {/* Detalles */}
                                 <div className="card-body d-flex flex-column p-4">
                                     <span className="text-secondary small fw-bold text-uppercase mb-1">{producto.categoria}</span>
                                     <h5 className="card-title text-white fw-bold mb-2 lh-sm">{producto.nombre}</h5>

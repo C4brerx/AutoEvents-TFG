@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL)
+    ? process.env.REACT_APP_API_URL
+    : 'http://localhost/autoevents/backend';
+
 function LoginForm({ onLoginSuccess }) {
     const [vista, setVista] = useState('login');
     const [nombre, setNombre] = useState('');
@@ -14,7 +18,7 @@ function LoginForm({ onLoginSuccess }) {
         const datosEnvio = vista === 'login' ? { email, password } : { nombre, email, password };
 
         try {
-            const respuesta = await fetch(`http://localhost/autoevents/backend/${endpoint}`, {
+            const respuesta = await fetch(`${API_URL}/${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosEnvio),

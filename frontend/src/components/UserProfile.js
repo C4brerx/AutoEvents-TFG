@@ -1,35 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 
+const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL)
+    ? process.env.REACT_APP_API_URL
+    : 'http://localhost/autoevents/backend';
+
 function UserProfile({ usuario, setUsuario }) {
-    // --- ESTADOS DEL FORMULARIO DE PERFIL ---
     const [nombre, setNombre] = useState('');
     const [biografia, setBiografia] = useState('');
     const [fotoPerfil, setFotoPerfil] = useState(null);
     const [fotoPrevia, setFotoPrevia] = useState(null);
     const [guardando, setGuardando] = useState(false);
 
-    // --- ESTADOS DE GAMIFICACIÓN ---
     const [stats, setStats] = useState(null);
     const [cargandoDatos, setCargandoDatos] = useState(true);
 
     useEffect(() => {
-        // Carga simultánea: Perfil para editar + Logros para la licencia
         const cargarDatos = async () => {
             try {
-                // 1. Obtener Perfil
-                const resPerfil = await fetch('http://localhost/autoevents/backend/perfil.php', { method: 'GET', credentials: 'include' });
+                const resPerfil = await fetch(`${API_URL}/perfil.php`, { method: 'GET', credentials: 'include' });
                 const dataPerfil = await resPerfil.json();
                 if (dataPerfil.estado === 'exito' && dataPerfil.perfil) {
                     setNombre(dataPerfil.perfil.nombre || '');
                     setBiografia(dataPerfil.perfil.biografia || '');
                     if (dataPerfil.perfil.foto_perfil) {
-                        setFotoPrevia(`http://localhost/autoevents/backend/uploads/perfiles/${dataPerfil.perfil.foto_perfil}`);
+                        setFotoPrevia(`${API_URL}/uploads/perfiles/${dataPerfil.perfil.foto_perfil}`);
                     }
                 }
 
-                // 2. Obtener Logros (XP y Nivel)
-                const resLogros = await fetch('http://localhost/autoevents/backend/logros.php', { method: 'GET', credentials: 'include' });
+                const resLogros = await fetch(`${API_URL}/logros.php`, { method: 'GET', credentials: 'include' });
                 const dataLogros = await resLogros.json();
                 if (dataLogros.estado === 'exito') {
                     setStats(dataLogros.stats);
@@ -53,7 +52,7 @@ function UserProfile({ usuario, setUsuario }) {
         if (fotoPerfil) formData.append('foto_perfil', fotoPerfil);
 
         try {
-            const res = await fetch('http://localhost/autoevents/backend/perfil.php', { method: 'POST', body: formData, credentials: 'include' });
+            const res = await fetch(`${API_URL}/perfil.php`, { method: 'POST', body: formData, credentials: 'include' });
             const data = await res.json();
 
             if (res.ok && data.estado === 'exito') {
@@ -64,7 +63,7 @@ function UserProfile({ usuario, setUsuario }) {
                 localStorage.setItem('ae_usuario', JSON.stringify({...usuario, nombre: data.perfil.nombre, foto_perfil: data.perfil.foto_perfil}));
 
                 if (data.perfil.foto_perfil) {
-                    setFotoPrevia(`http://localhost/autoevents/backend/uploads/perfiles/${data.perfil.foto_perfil}`);
+                    setFotoPrevia(`${API_URL}/uploads/perfiles/${data.perfil.foto_perfil}`);
                 }
             } else {
                 Swal.fire({ icon: 'error', title: 'Error', text: data.mensaje, background: '#1a1a1a', color: '#fff', confirmButtonColor: '#e60000' });

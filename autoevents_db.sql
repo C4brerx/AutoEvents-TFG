@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-05-2026 a las 18:37:24
+-- Tiempo de generación: 18-05-2026 a las 14:48:11
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `autoevents_db`
 --
-CREATE DATABASE IF NOT EXISTS `autoevents_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `autoevents_db`;
 
 -- --------------------------------------------------------
 
@@ -64,7 +62,8 @@ INSERT INTO `comentarios_foro` (`id`, `publicacion_id`, `usuario_id`, `contenido
 (45, 5, 77, 'Aprovecho el hilo para preguntar: ¿alguien sabe de un taller de confianza por la zona sur?', '2026-04-29 20:55:26'),
 (46, 8, 103, 'Yo llevo la suspensión roscada que venden en la tienda de esta app y va de lujo, súper recomendada.', '2026-04-29 16:55:26'),
 (47, 20, 38, 'El problema no es la pieza, el problema es homologarlo luego en la ITV. Prepárate a pagar billetes.', '2026-04-29 12:55:26'),
-(48, 23, 64, 'Te he enviado un mensaje privado con los datos del chico que me hizo a mí el proyecto técnico.', '2026-04-29 10:55:27');
+(48, 23, 64, 'Te he enviado un mensaje privado con los datos del chico que me hizo a mí el proyecto técnico.', '2026-04-29 10:55:27'),
+(49, 1, 8, 'bnvnv', '2026-05-10 12:12:44');
 
 -- --------------------------------------------------------
 
@@ -81,34 +80,37 @@ CREATE TABLE `eventos` (
   `tipo` varchar(50) NOT NULL,
   `aforo_maximo` int(11) DEFAULT NULL,
   `imagen_url` varchar(255) DEFAULT NULL,
-  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  `estado` enum('aprobado','pendiente','rechazado') DEFAULT 'aprobado',
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `creador_id` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `eventos`
 --
 
-INSERT INTO `eventos` (`id`, `titulo`, `descripcion`, `fecha`, `ubicacion`, `tipo`, `aforo_maximo`, `imagen_url`, `creado_en`) VALUES
-(1, 'Trackday Jarama Premium', 'Tandas libres para vehículos de más de 300cv. Cronometraje y catering incluido.', '2026-06-15 09:00:00', 'Circuito del Jarama, Madrid', 'Trackday', 40, 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(2, 'KDD JDM Legends', 'Solo coches japoneses clásicos y modernos. Concurso de mejor proyecto y escape más ruidoso.', '2026-07-20 18:00:00', 'Parking Kinepolis, Madrid', 'Concentración', 200, 'https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(3, 'Ruta Transpirenaica 3 Días', 'Espectacular ruta por los Pirineos. Solo apta para conductores experimentados.', '2026-08-10 08:00:00', 'Salida: Jaca, Huesca', 'Ruta', 20, 'https://images.pexels.com/photos/210182/pexels-photo-210182.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(4, 'Exposición Clásicos 80s', 'Vuelven los años dorados. Vehículos estrictamente de serie.', '2026-05-30 10:00:00', 'IFEMA, Madrid', 'Exposición', 500, 'https://images.pexels.com/photos/2030037/pexels-photo-2030037.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(5, 'Trackday Nocturno Montmeló', 'Experimenta la velocidad bajo los focos del circuito de F1.', '2026-09-05 21:00:00', 'Circuito de Barcelona-Catalunya', 'Trackday', 60, 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(6, 'Concentración 4x4 y Offroad', 'Barro, rutas complicadas y compañerismo. Trae tu eslinga.', '2026-10-12 09:30:00', 'Finca Los Barros, Toledo', 'Concentración', 150, 'https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(7, 'Coffee & Cars Sunday', 'Reunión informal de domingo por la mañana. Buen café y mejores coches.', '2026-05-15 10:00:00', 'La Navata, Galapagar', 'Concentración', 100, 'https://images.pexels.com/photos/372810/pexels-photo-372810.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(8, 'Drift Day Arena', 'Circuito mojado preparado para derrapar sin destrozar neumáticos.', '2026-11-20 10:00:00', 'Circuito de Kotarr, Burgos', 'Trackday', 30, 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(9, 'Ruta Costa Brava', 'Curvas bordeando el mar Mediterráneo. Parada gastronómica incluida.', '2026-06-25 09:00:00', 'Tossa de Mar, Girona', 'Ruta', 25, 'https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(10, 'EuroStance Meet', 'Concentración de coches stance y estilo europeo (VAG, BMW).', '2026-07-08 17:00:00', 'Parque Juan Carlos I, Madrid', 'Concentración', 300, 'https://images.pexels.com/photos/13861/IMG_3496bfree.jpg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(11, 'Supercars Sunset', 'Reunión exclusiva para deportivos de alta gama (Ferrari, Lambo, McLaren).', '2026-08-01 19:30:00', 'Puerto Banús, Marbella', 'Exposición', 50, 'https://images.pexels.com/photos/3786091/pexels-photo-3786091.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(12, 'Trackday Cheste Motos y Coches', 'Tandas mixtas organizadas por niveles. Imprescindible casco.', '2026-09-18 08:30:00', 'Circuito Ricardo Tormo, Valencia', 'Trackday', 80, 'https://images.pexels.com/photos/248687/pexels-photo-248687.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(13, 'Ruta de los Pueblos Negros', 'Paisajes impresionantes y carreteras ratoneras.', '2026-10-30 09:00:00', 'Guadalajara', 'Ruta', 20, 'https://images.pexels.com/photos/707046/pexels-photo-707046.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(14, 'Classic Rally Regularidad', 'Prueba amateur de regularidad para vehículos anteriores a 1995.', '2026-05-22 08:00:00', 'Navacerrada, Madrid', 'Ruta', 60, 'https://images.pexels.com/photos/225841/pexels-photo-225841.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(15, 'Muscle Car Fest', 'El V8 es el rey. Mustangs, Camaros, Challengers y humo.', '2026-07-04 12:00:00', 'Base Aérea (Exhibición), Zaragoza', 'Concentración', 120, 'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(16, 'Exposición Movilidad Eléctrica', 'El futuro está aquí. Tesla, Polestar y lo último en EV.', '2026-06-10 10:00:00', 'Plaza Mayor, Valladolid', 'Exposición', 500, 'https://images.pexels.com/photos/110844/pexels-photo-110844.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(17, 'Trackday Ascari', 'Disfruta del circuito más exclusivo y largo de España.', '2026-11-15 09:00:00', 'Ascari Resort, Ronda', 'Trackday', 30, 'https://images.pexels.com/photos/3156482/pexels-photo-3156482.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(18, 'Quedada Fotográfica NightDrive', 'Trae tu cámara y tu coche limpio. Spotters bienvenidos.', '2026-05-18 23:00:00', 'Azca, Madrid', 'Concentración', 40, 'https://images.pexels.com/photos/1687147/pexels-photo-1687147.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(19, 'Ruta Valles Pasiegos', 'Verde, vacas y curvas perfectas. Comida de sobaos y quesadas.', '2026-08-22 09:30:00', 'Vega de Pas, Cantabria', 'Ruta', 15, 'https://images.pexels.com/photos/2882234/pexels-photo-2882234.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52'),
-(20, 'Festival del Motor Solidario', 'Todo lo recaudado irá a causas benéficas. Todo tipo de vehículos.', '2026-12-20 11:00:00', 'Recinto Ferial, Málaga', 'Exposición', 1000, 'https://images.pexels.com/photos/3422964/pexels-photo-3422964.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52');
+INSERT INTO `eventos` (`id`, `titulo`, `descripcion`, `fecha`, `ubicacion`, `tipo`, `aforo_maximo`, `imagen_url`, `creado_en`, `estado`, `fecha_creacion`, `creador_id`) VALUES
+(1, 'Trackday Jarama Premium', 'Tandas libres para vehículos de más de 300cv. Cronometraje y catering incluido.', '2026-06-15 09:00:00', 'Circuito del Jarama, Madrid', 'Trackday', 40, 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(2, 'KDD JDM Legends', 'Solo coches japoneses clásicos y modernos. Concurso de mejor proyecto y escape más ruidoso.', '2026-07-20 18:00:00', 'Parking Kinepolis, Madrid', 'Concentración', 200, 'https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(3, 'Ruta Transpirenaica 3 Días', 'Espectacular ruta por los Pirineos. Solo apta para conductores experimentados.', '2026-08-10 08:00:00', 'Salida: Jaca, Huesca', 'Ruta', 20, 'https://images.pexels.com/photos/210182/pexels-photo-210182.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(4, 'Exposición Clásicos 80s', 'Vuelven los años dorados. Vehículos estrictamente de serie.', '2026-05-30 10:00:00', 'IFEMA, Madrid', 'Exposición', 500, 'https://images.pexels.com/photos/2030037/pexels-photo-2030037.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(5, 'Trackday Nocturno Montmeló', 'Experimenta la velocidad bajo los focos del circuito de F1.', '2026-09-05 21:00:00', 'Circuito de Barcelona-Catalunya', 'Trackday', 60, 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(6, 'Concentración 4x4 y Offroad', 'Barro, rutas complicadas y compañerismo. Trae tu eslinga.', '2026-10-12 09:30:00', 'Finca Los Barros, Toledo', 'Concentración', 150, 'https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(7, 'Coffee & Cars Sunday', 'Reunión informal de domingo por la mañana. Buen café y mejores coches.', '2026-05-15 10:00:00', 'La Navata, Galapagar', 'Concentración', 100, 'https://images.pexels.com/photos/372810/pexels-photo-372810.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(8, 'Drift Day Arena', 'Circuito mojado preparado para derrapar sin destrozar neumáticos.', '2026-11-20 10:00:00', 'Circuito de Kotarr, Burgos', 'Trackday', 30, 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(9, 'Ruta Costa Brava', 'Curvas bordeando el mar Mediterráneo. Parada gastronómica incluida.', '2026-06-25 09:00:00', 'Tossa de Mar, Girona', 'Ruta', 25, 'https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(10, 'EuroStance Meet', 'Concentración de coches stance y estilo europeo (VAG, BMW).', '2026-07-08 17:00:00', 'Parque Juan Carlos I, Madrid', 'Concentración', 300, 'https://images.pexels.com/photos/13861/IMG_3496bfree.jpg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(11, 'Supercars Sunset', 'Reunión exclusiva para deportivos de alta gama (Ferrari, Lambo, McLaren).', '2026-08-01 19:30:00', 'Puerto Banús, Marbella', 'Exposición', 50, 'https://images.pexels.com/photos/3786091/pexels-photo-3786091.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(12, 'Trackday Cheste Motos y Coches', 'Tandas mixtas organizadas por niveles. Imprescindible casco.', '2026-09-18 08:30:00', 'Circuito Ricardo Tormo, Valencia', 'Trackday', 80, 'https://images.pexels.com/photos/248687/pexels-photo-248687.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(13, 'Ruta de los Pueblos Negros', 'Paisajes impresionantes y carreteras ratoneras.', '2026-10-30 09:00:00', 'Guadalajara', 'Ruta', 20, 'https://images.pexels.com/photos/707046/pexels-photo-707046.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(14, 'Classic Rally Regularidad', 'Prueba amateur de regularidad para vehículos anteriores a 1995.', '2026-05-22 08:00:00', 'Navacerrada, Madrid', 'Ruta', 60, 'https://images.pexels.com/photos/225841/pexels-photo-225841.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(15, 'Muscle Car Fest', 'El V8 es el rey. Mustangs, Camaros, Challengers y humo.', '2026-07-04 12:00:00', 'Base Aérea (Exhibición), Zaragoza', 'Concentración', 120, 'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(16, 'Exposición Movilidad Eléctrica', 'El futuro está aquí. Tesla, Polestar y lo último en EV.', '2026-06-10 10:00:00', 'Plaza Mayor, Valladolid', 'Exposición', 500, 'https://images.pexels.com/photos/110844/pexels-photo-110844.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(17, 'Trackday Ascari', 'Disfruta del circuito más exclusivo y largo de España.', '2026-11-15 09:00:00', 'Ascari Resort, Ronda', 'Trackday', 30, 'https://images.pexels.com/photos/3156482/pexels-photo-3156482.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(18, 'Quedada Fotográfica NightDrive', 'Trae tu cámara y tu coche limpio. Spotters bienvenidos.', '2026-05-18 23:00:00', 'Azca, Madrid', 'Concentración', 40, 'https://images.pexels.com/photos/1687147/pexels-photo-1687147.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(19, 'Ruta Valles Pasiegos', 'Verde, vacas y curvas perfectas. Comida de sobaos y quesadas.', '2026-08-22 09:30:00', 'Vega de Pas, Cantabria', 'Ruta', 15, 'https://images.pexels.com/photos/2882234/pexels-photo-2882234.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1),
+(20, 'Festival del Motor Solidario', 'Todo lo recaudado irá a causas benéficas. Todo tipo de vehículos.', '2026-12-20 11:00:00', 'Recinto Ferial, Málaga', 'Exposición', 1000, 'https://images.pexels.com/photos/3422964/pexels-photo-3422964.jpeg?auto=compress&cs=tinysrgb&w=800', '2026-04-13 15:00:52', 'aprobado', '2026-05-13 08:45:31', 1);
 
 -- --------------------------------------------------------
 
@@ -127,7 +129,35 @@ CREATE TABLE `eventos_asistentes` (
 --
 
 INSERT INTO `eventos_asistentes` (`id_evento`, `id_usuario`, `fecha_registro`) VALUES
+(4, 8, '2026-05-10 12:08:36'),
+(13, 8, '2026-05-10 12:06:50'),
+(16, 11, '2026-05-13 06:21:01'),
 (18, 9, '2026-04-29 14:40:18');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `evento_asistentes`
+--
+
+CREATE TABLE `evento_asistentes` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `evento_id` int(11) NOT NULL,
+  `fecha_registro` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `evento_asistentes`
+--
+
+INSERT INTO `evento_asistentes` (`id`, `usuario_id`, `evento_id`, `fecha_registro`) VALUES
+(11, 8, 15, '2026-05-13 13:47:00'),
+(12, 8, 10, '2026-05-13 13:47:01'),
+(13, 8, 9, '2026-05-13 13:47:02'),
+(14, 8, 5, '2026-05-13 13:53:10'),
+(16, 8, 1, '2026-05-13 14:19:44'),
+(17, 8, 18, '2026-05-13 14:26:32');
 
 -- --------------------------------------------------------
 
@@ -165,7 +195,15 @@ CREATE TABLE `mensajes` (
 --
 
 INSERT INTO `mensajes` (`id`, `remitente_id`, `destinatario_id`, `producto_id`, `contenido`, `fecha`, `leido`) VALUES
-(1, 8, 8, 29, '[Sobre Llantas bbs]: holaaa', '2026-04-30 16:30:52', 0);
+(1, 8, 8, 29, '[Sobre Llantas bbs]: holaaa', '2026-04-30 16:30:52', 0),
+(4, 8, 8, 29, '[Sobre Llantas bbs]: Me interesa', '2026-05-13 14:20:56', 0),
+(5, 8, 8, 29, '[Sobre Llantas bbs]: HOlaaaa', '2026-05-13 14:27:28', 0),
+(6, 8, 3, NULL, 'Hola', '2026-05-13 14:31:47', 0),
+(7, 11, 8, NULL, 'Hola', '2026-05-13 14:32:45', 0),
+(8, 8, 11, NULL, 'Hola que tal ', '2026-05-13 14:33:09', 0),
+(9, 11, 8, 29, '[Sobre Llantas bbs]: Estoy interesada', '2026-05-13 14:33:54', 0),
+(10, 8, 11, NULL, 'alert(&#039;Hackeado&#039;);', '2026-05-18 10:55:31', 0),
+(11, 8, 11, NULL, 'alert(&#039;Hackeado&#039;);', '2026-05-18 10:56:11', 0);
 
 -- --------------------------------------------------------
 
@@ -176,41 +214,171 @@ INSERT INTO `mensajes` (`id`, `remitente_id`, `destinatario_id`, `producto_id`, 
 CREATE TABLE `notificaciones` (
   `id` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
-  `titulo` varchar(100) NOT NULL,
-  `mensaje` text NOT NULL,
-  `icono` varchar(50) DEFAULT 'bi-bell-fill',
+  `mensaje` varchar(255) NOT NULL,
   `leido` tinyint(1) DEFAULT 0,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+  `fecha_creacion` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `notificaciones`
 --
 
-INSERT INTO `notificaciones` (`id`, `id_usuario`, `titulo`, `mensaje`, `icono`, `leido`, `fecha_creacion`) VALUES
-(1, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Coffee & Cars Sunday. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 07:38:21'),
-(2, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Classic Rally Regularidad. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 07:41:00'),
-(3, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 07:42:48'),
-(4, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Coffee & Cars Sunday. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 07:47:44'),
-(5, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 09:28:51'),
-(6, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Trackday Nocturno Montmeló. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 09:48:32'),
-(7, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: KDD JDM Legends. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 09:55:08'),
-(8, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 10:47:30'),
-(9, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 10:58:54'),
-(10, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Classic Rally Regularidad. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 10:58:59'),
-(11, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Exposición Movilidad Eléctrica. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 10:59:02'),
-(12, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Coffee & Cars Sunday. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 11:03:17'),
-(13, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 11:03:39'),
-(14, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Classic Rally Regularidad. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 11:03:40'),
-(15, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Ruta de los Pueblos Negros. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 11:05:31'),
-(16, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Trackday Jarama Premium. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 11:06:24'),
-(17, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-16 11:07:57'),
-(18, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Muscle Car Fest. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-20 11:33:27'),
-(19, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-20 11:52:31'),
-(20, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Coffee & Cars Sunday. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-29 12:28:10'),
-(21, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Coffee & Cars Sunday. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-29 12:28:20'),
-(22, 9, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 0, '2026-04-29 14:40:18'),
-(23, 8, '¡Plaza Confirmada!', 'Has reservado tu plaza correctamente para el evento: Quedada Fotográfica NightDrive. ¡Pásalo genial!', 'bi-ticket-perforated-fill', 1, '2026-04-30 08:39:06');
+INSERT INTO `notificaciones` (`id`, `id_usuario`, `mensaje`, `leido`, `fecha_creacion`) VALUES
+(1, 8, '✅ ¡Plaza confirmada! Te has apuntado correctamente a: Classic Rally Regularidad', 1, '2026-05-13 14:19:31'),
+(2, 8, '✅ ¡Plaza confirmada! Te has apuntado correctamente a: Trackday Jarama Premium', 1, '2026-05-13 14:19:44'),
+(3, 8, '✅ ¡Plaza confirmada! Te has apuntado correctamente a: Quedada Fotográfica NightDrive', 1, '2026-05-13 14:26:32'),
+(4, 8, '💬 Nuevo mensaje directo de Adrian Cabrera', 1, '2026-05-13 14:27:28'),
+(5, 3, '💬 Nuevo mensaje directo de Adrian Cabrera', 0, '2026-05-13 14:31:47'),
+(6, 8, '💬 Nuevo mensaje directo de María López', 1, '2026-05-13 14:32:45'),
+(7, 11, '💬 Nuevo mensaje directo de Adrian Cabrera', 1, '2026-05-13 14:33:09'),
+(8, 8, '💬 Nuevo mensaje directo de María López', 1, '2026-05-13 14:33:54'),
+(9, 11, '💬 Nuevo mensaje directo de Adrian Cabrera', 1, '2026-05-18 10:55:31'),
+(10, 11, '💬 Nuevo mensaje directo de Adrian Cabrera', 1, '2026-05-18 10:56:11'),
+(11, 10, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(12, 100, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(13, 101, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(14, 102, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(15, 103, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(16, 104, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(17, 105, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(18, 106, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(19, 107, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(20, 108, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(21, 109, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(22, 11, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 1, '2026-05-18 12:16:02'),
+(23, 12, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(24, 13, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(25, 14, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(26, 15, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(27, 16, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(28, 17, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(29, 18, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(30, 19, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(31, 20, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(32, 21, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(33, 22, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(34, 23, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(35, 24, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(36, 25, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(37, 26, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(38, 27, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(39, 28, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(40, 29, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(41, 3, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(42, 30, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(43, 31, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(44, 32, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(45, 33, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(46, 34, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(47, 35, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(48, 36, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(49, 37, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(50, 38, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(51, 39, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(52, 4, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(53, 40, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(54, 41, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(55, 42, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(56, 43, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(57, 44, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(58, 45, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(59, 46, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(60, 47, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(61, 48, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(62, 49, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(63, 5, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(64, 50, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(65, 51, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(66, 52, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(67, 53, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(68, 54, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(69, 55, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(70, 56, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(71, 57, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(72, 58, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(73, 59, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(74, 60, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(75, 61, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(76, 62, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(77, 63, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(78, 64, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(79, 65, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(80, 66, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(81, 67, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(82, 68, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(83, 69, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(84, 70, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(85, 71, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(86, 72, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(87, 73, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(88, 74, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(89, 75, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(90, 76, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(91, 77, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(92, 78, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(93, 79, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(94, 8, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 1, '2026-05-18 12:16:02'),
+(95, 80, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(96, 81, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(97, 82, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(98, 83, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(99, 84, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(100, 85, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(101, 86, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(102, 87, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(103, 88, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(104, 89, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(105, 9, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(106, 90, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(107, 91, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(108, 92, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(109, 93, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(110, 94, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(111, 95, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(112, 96, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(113, 97, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(114, 98, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(115, 99, '🏎️ ¡Nuevo evento! Se ha publicado: Evento de prueba. ¡No te quedes sin plaza!', 0, '2026-05-18 12:16:02'),
+(138, 11, '✅ ¡Plaza confirmada! Te has apuntado correctamente a: Evento de prueba', 1, '2026-05-18 12:20:31'),
+(139, 8, '✅ ¡Plaza confirmada! Te has apuntado correctamente a: Festival del Motor Solidario', 1, '2026-05-18 13:11:17');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `peticiones_ia`
+--
+
+CREATE TABLE `peticiones_ia` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `peticiones_ia`
+--
+
+INSERT INTO `peticiones_ia` (`id`, `usuario_id`, `fecha`) VALUES
+(3, 8, '2026-05-13 11:30:19');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `peticiones_recomendar`
+--
+
+CREATE TABLE `peticiones_recomendar` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `peticiones_recomendar`
+--
+
+INSERT INTO `peticiones_recomendar` (`id`, `usuario_id`, `fecha`) VALUES
+(3, 8, '2026-05-18 11:11:46');
 
 -- --------------------------------------------------------
 
@@ -345,111 +513,111 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `fecha_registro`, `biografia`, `foto_perfil`, `intentos_fallidos`, `bloqueado_hasta`, `rol`) VALUES
-(3, 'Adrian Cabrera Caceres', 'acabreracaceres@gmail.com', '$2y$10$H7fyOoQnowqfxd8NULj4tuTvm.uP7PtN1DJ/68clmhWKzFtWdiDE.', '2026-03-19 13:21:02', NULL, NULL, 0, NULL, 'usuario'),
-(4, 'Pruebas', 'P@gmail.es', '$2y$10$Xqf1S3MIhP4xVM/cvj5FMuS3VqX71WEyBS.eGEctrY8pgG2PVP94O', '2026-03-19 16:00:20', NULL, NULL, 0, NULL, 'usuario'),
-(5, 'Adri', 'p1@gmail.com', '$2y$10$HGzEzfaNd2qWzOuGFe6FrutRyT7I1PrXOtWKW.hsZqSz8tugu/NPW', '2026-04-02 23:10:36', NULL, NULL, 0, NULL, 'usuario'),
-(8, 'Adrian Cabrera', 'TFG@gmail.com', '$2y$10$JKcClCM/iZsUWhfE4k.tr.K40n9P3Ack/lONuHR3Kz0HNZc6DNoiq', '2026-04-06 12:46:23', 'ME gusta el Drift', 'avatar_69dcf985887ec_7d11.webp', 0, NULL, 'admin'),
-(9, 'TFG2', 'TFG2@gmail.com', '$2y$12$Cmv9ggnhcA8IJCAxpLvSDOysPxQSNTA6E4tDmgTHnNr8UOmpthCa.', '2026-04-29 14:39:38', '', NULL, 5, '2026-05-04 18:11:52', 'usuario'),
-(10, 'Alejandro García', 'alejandro.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(11, 'María López', 'maria.l@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(12, 'Carlos Ruiz', 'carlos.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(13, 'Laura Fernández', 'laura.f@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(14, 'Javier Martínez', 'javier.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(15, 'Ana Gómez', 'ana.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(16, 'Diego Sánchez', 'diego.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(17, 'Lucía Martín', 'lucia.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(18, 'David Pérez', 'david.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(19, 'Carmen Gómez', 'carmen.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(20, 'Daniel Navarro', 'daniel.n@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(21, 'Elena Torres', 'elena.t@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(22, 'Pablo Domínguez', 'pablo.d@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(23, 'Sara Ramírez', 'sara.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(24, 'Jorge Gil', 'jorge.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(25, 'Paula Blanco', 'paula.b@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(26, 'Mario Serrano', 'mario.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(27, 'Marta Molina', 'marta.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(28, 'Marcos Suárez', 'marcos.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(29, 'Andrea Castro', 'andrea.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(30, 'Iván Ortiz', 'ivan.o@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(31, 'Alba Rubio', 'alba.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(32, 'Rubén Marín', 'ruben.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(33, 'Nerea Sanz', 'nerea.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(34, 'Víctor Iglesias', 'victor.i@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(35, 'Cristina Alonso', 'cristina.a@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(36, 'Hugo Garrido', 'hugo.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(37, 'Silvia Cruz', 'silvia.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(38, 'Álvaro Núñez', 'alvaro.n@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(39, 'Raquel Medina', 'raquel.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(40, 'Adrián Peña', 'adrian.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(41, 'Patricia Flores', 'patricia.f@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(42, 'Manuel Cabrera', 'manuel.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(43, 'Natalia Reyes', 'natalia.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(44, 'Raúl Aguilar', 'raul.a@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(45, 'Miriam Santana', 'miriam.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(46, 'Roberto Vidal', 'roberto.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(47, 'Lorena Ferrer', 'lorena.f@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(48, 'Héctor Vicente', 'hector.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(49, 'Berta Méndez', 'berta.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(50, 'Óscar Gallego', 'oscar.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(51, 'Rocío Vega', 'rocio.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(52, 'Fernando Rojas', 'fernando.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(53, 'Inés Santos', 'ines.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(54, 'Eduardo Carmona', 'eduardo.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(55, 'Teresa Crespo', 'teresa.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(56, 'Iker Román', 'iker.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(57, 'Julia Pastor', 'julia.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(58, 'Samuel Soto', 'samuel.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(59, 'Clara Sáez', 'clara.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(60, 'Aitor Velasco', 'aitor.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(61, 'Marina Moya', 'marina.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(62, 'Martín Soler', 'martin.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(63, 'Sonia Parra', 'sonia.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(64, 'Gonzalo Bravo', 'gonzalo.b@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(65, 'Alicia Gallardo', 'alicia.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(66, 'Rodrigo Prieto', 'rodrigo.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(67, 'Beatriz Esteban', 'beatriz.e@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(68, 'Guillermo Lorenzo', 'guillermo.l@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(69, 'Celia Márquez', 'celia.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(70, 'Félix Peña', 'felix.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(71, 'Blanca Pardo', 'blanca.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(72, 'Ismael Varela', 'ismael.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(73, 'Lidia Castillo', 'lidia.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(74, 'Tomás Mora', 'tomas.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(75, 'Nuria Rivas', 'nuria.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(76, 'Borja Vidal', 'borja.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(77, 'Aída Lozano', 'aida.l@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(78, 'Cristian Arias', 'cristian.a@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(79, 'Rosa Herrero', 'rosa.h@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(80, 'Joel Carmona', 'joel.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(81, 'Mónica Vicente', 'monica.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(82, 'Marc Aguilar', 'marc.a@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(83, 'Aurora Montes', 'aurora.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(84, 'Jonatan Perea', 'jonatan.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(85, 'Diana Segura', 'diana.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(86, 'Alex Valera', 'alex.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(87, 'Esther Fuentes', 'esther.f@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(88, 'Darío Gálvez', 'dario.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(89, 'Gema Salgado', 'gema.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(90, 'Juanma Ríos', 'juanma.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(91, 'Noelia Cuesta', 'noelia.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(92, 'Paco Salas', 'paco.s@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(93, 'Irene Pareja', 'irene.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(94, 'Iñaki Cruz', 'inaki.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(95, 'Vanesa Mota', 'vanesa.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(96, 'Julio Cárdenas', 'julio.c@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(97, 'Silvia Cobo', 'silvia.cobo@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(98, 'Fabián Duque', 'fabian.d@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(99, 'Loreto Bueno', 'loreto.b@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(100, 'Xavi Luna', 'xavi.l@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(101, 'Lola Vaca', 'lola.v@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(102, 'Mateo Pino', 'mateo.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(103, 'Susana Lago', 'susana.l@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(104, 'Aarón Marco', 'aaron.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(105, 'Estefanía Roldán', 'estefania.r@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(106, 'Pol Garcés', 'pol.g@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(107, 'Ruth Paz', 'ruth.p@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(108, 'Oliver Aranda', 'oliver.a@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
-(109, 'Eva Mínguez', 'eva.m@email.com', '$2y$10$dummy', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario');
+(3, 'Admin Principal', 'usuario_3@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-03-19 13:21:02', NULL, NULL, 0, NULL, 'usuario'),
+(4, 'Pruebas', 'usuario_4@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-03-19 16:00:20', NULL, NULL, 0, NULL, 'usuario'),
+(5, 'Adri', 'usuario_5@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-02 23:10:36', NULL, NULL, 0, NULL, 'usuario'),
+(8, 'Adrian Cabrera', 'usuario_8@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-06 12:46:23', 'ME gusta el Drift', 'avatar_69dcf985887ec_7d11.webp', 0, NULL, 'admin'),
+(9, 'TFG2', 'usuario_9@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 14:39:38', '', NULL, 5, '2026-05-04 18:11:52', 'usuario'),
+(10, 'Alejandro García', 'usuario_10@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(11, 'MAria Torpes', 'usuario_11@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', '', 'avatar_6a0418ec36f6b_90a2.jpg', 0, NULL, 'usuario'),
+(12, 'Carlos Ruiz', 'usuario_12@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(13, 'Laura Fernández', 'usuario_13@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(14, 'Javier Martínez', 'usuario_14@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(15, 'Ana Gómez', 'usuario_15@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(16, 'Diego Sánchez', 'usuario_16@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(17, 'Lucía Martín', 'usuario_17@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(18, 'David Pérez', 'usuario_18@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(19, 'Carmen Gómez', 'usuario_19@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(20, 'Daniel Navarro', 'usuario_20@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(21, 'Elena Torres', 'usuario_21@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(22, 'Pablo Domínguez', 'usuario_22@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(23, 'Sara Ramírez', 'usuario_23@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(24, 'Jorge Gil', 'usuario_24@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(25, 'Paula Blanco', 'usuario_25@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(26, 'Mario Serrano', 'usuario_26@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(27, 'Marta Molina', 'usuario_27@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(28, 'Marcos Suárez', 'usuario_28@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(29, 'Andrea Castro', 'usuario_29@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(30, 'Iván Ortiz', 'usuario_30@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(31, 'Alba Rubio', 'usuario_31@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(32, 'Rubén Marín', 'usuario_32@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(33, 'Nerea Sanz', 'usuario_33@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(34, 'Víctor Iglesias', 'usuario_34@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(35, 'Cristina Alonso', 'usuario_35@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(36, 'Hugo Garrido', 'usuario_36@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(37, 'Silvia Cruz', 'usuario_37@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(38, 'Álvaro Núñez', 'usuario_38@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(39, 'Raquel Medina', 'usuario_39@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(40, 'Adrián Peña', 'usuario_40@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(41, 'Patricia Flores', 'usuario_41@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(42, 'Manuel Cabrera', 'usuario_42@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(43, 'Natalia Reyes', 'usuario_43@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(44, 'Raúl Aguilar', 'usuario_44@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(45, 'Miriam Santana', 'usuario_45@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(46, 'Roberto Vidal', 'usuario_46@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(47, 'Lorena Ferrer', 'usuario_47@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(48, 'Héctor Vicente', 'usuario_48@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(49, 'Berta Méndez', 'usuario_49@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(50, 'Óscar Gallego', 'usuario_50@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(51, 'Rocío Vega', 'usuario_51@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(52, 'Fernando Rojas', 'usuario_52@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(53, 'Inés Santos', 'usuario_53@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(54, 'Eduardo Carmona', 'usuario_54@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(55, 'Teresa Crespo', 'usuario_55@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(56, 'Iker Román', 'usuario_56@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(57, 'Julia Pastor', 'usuario_57@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(58, 'Samuel Soto', 'usuario_58@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(59, 'Clara Sáez', 'usuario_59@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(60, 'Aitor Velasco', 'usuario_60@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(61, 'Marina Moya', 'usuario_61@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(62, 'Martín Soler', 'usuario_62@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(63, 'Sonia Parra', 'usuario_63@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(64, 'Gonzalo Bravo', 'usuario_64@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(65, 'Alicia Gallardo', 'usuario_65@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(66, 'Rodrigo Prieto', 'usuario_66@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(67, 'Beatriz Esteban', 'usuario_67@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(68, 'Guillermo Lorenzo', 'usuario_68@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(69, 'Celia Márquez', 'usuario_69@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(70, 'Félix Peña', 'usuario_70@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(71, 'Blanca Pardo', 'usuario_71@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(72, 'Ismael Varela', 'usuario_72@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(73, 'Lidia Castillo', 'usuario_73@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(74, 'Tomás Mora', 'usuario_74@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(75, 'Nuria Rivas', 'usuario_75@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(76, 'Borja Vidal', 'usuario_76@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(77, 'Aída Lozano', 'usuario_77@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(78, 'Cristian Arias', 'usuario_78@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(79, 'Rosa Herrero', 'usuario_79@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(80, 'Joel Carmona', 'usuario_80@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(81, 'Mónica Vicente', 'usuario_81@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(82, 'Marc Aguilar', 'usuario_82@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(83, 'Aurora Montes', 'usuario_83@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(84, 'Jonatan Perea', 'usuario_84@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(85, 'Diana Segura', 'usuario_85@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(86, 'Alex Valera', 'usuario_86@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(87, 'Esther Fuentes', 'usuario_87@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(88, 'Darío Gálvez', 'usuario_88@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(89, 'Gema Salgado', 'usuario_89@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(90, 'Juanma Ríos', 'usuario_90@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(91, 'Noelia Cuesta', 'usuario_91@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(92, 'Paco Salas', 'usuario_92@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(93, 'Irene Pareja', 'usuario_93@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(94, 'Iñaki Cruz', 'usuario_94@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(95, 'Vanesa Mota', 'usuario_95@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(96, 'Julio Cárdenas', 'usuario_96@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(97, 'Silvia Cobo', 'usuario_97@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(98, 'Fabián Duque', 'usuario_98@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(99, 'Loreto Bueno', 'usuario_99@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(100, 'Xavi Luna', 'usuario_100@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(101, 'Lola Vaca', 'usuario_101@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(102, 'Mateo Pino', 'usuario_102@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(103, 'Susana Lago', 'usuario_103@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(104, 'Aarón Marco', 'usuario_104@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(105, 'Estefanía Roldán', 'usuario_105@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(106, 'Pol Garcés', 'usuario_106@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(107, 'Ruth Paz', 'usuario_107@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(108, 'Oliver Aranda', 'usuario_108@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario'),
+(109, 'Eva Mínguez', 'usuario_109@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-04-29 15:07:37', NULL, NULL, 0, NULL, 'usuario');
 
 -- --------------------------------------------------------
 
@@ -466,42 +634,92 @@ CREATE TABLE `vehiculos` (
   `motor` varchar(50) DEFAULT NULL,
   `especificaciones` text DEFAULT NULL,
   `modificaciones` text DEFAULT NULL,
-  `fotos` text DEFAULT NULL
+  `fotos` text DEFAULT NULL,
+  `vin` varchar(17) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `vehiculos`
 --
 
-INSERT INTO `vehiculos` (`id`, `usuario_id`, `marca`, `modelo`, `anio`, `motor`, `especificaciones`, `modificaciones`, `fotos`) VALUES
-(4, 3, 'BMW', 'M4', 2022, 'BMW M4 Competition (Coupé / Convertible) Potencia:', NULL, NULL, '1773935910-9978-2022-bmw-m4-csl-15.jpg'),
-(5, 4, 'BMW', 'M4 Competition', 2022, '3.0L S58', ' motor gasolina 3.0L TwinPower Turbo de 6 cilindros en línea, con potencias de 480 CV (base) a 510 CV (Competition) y hasta 650 Nm de par, asociado a tracción trasera o M xDrive y cambio automático de 8 velocidades. Es conocido por su aceleración de 0 a 100 km/h en 3,9 segundos', NULL, '1773937634-9008-2022-bmw-m4-csl.webp,1773937634-7149-2022-bmw-m4-csl-15.jpg'),
-(7, 4, 'DS', 'DS7', 2021, '1.6', '300cv', NULL, '1774533985-9130-article-ds-7-crossback-suv-precios-gama-espana-59e741366e01f.jpeg'),
-(8, 4, 'Peugeot', 'Corsa', 2022, '1.2 puretech', 'Escape 180 cv repro ', NULL, '1775163225-7551-5c18ca01-933d-4e86-9c8c-8e2ef20595bf.webp'),
-(9, 5, 'DS', 'DS/', 2021, '1.6', 'dcsfsfsef', NULL, '1775171471-1475-article-ds-7-crossback-suv-precios-gama-espana-59e741366e01f.jpeg'),
-(11, 8, 'Honda', 'NSX', 1999, '3.0i V6 24V', 'Este modelo fue personalizado por el diseñador Bruno Berard, lo que hace que este modelo sea único, con su pintura a juego en color rojo. Este modelo fue expuesto en el Salón de Ginebra en 1997. El propietario actual tiene el vehículo desde hace más de 20 años, desde 2005. El vehículo acaba de pasar una revisión, con reemplazo del kit de distribución (correas y poleas).', NULL, 'ae_69e0b1b3215e5_3e65236b.jpg'),
-(54, 77, 'BMW', 'M3 E46', 2004, '3.2 L6 343cv', 'Llantas CSL, Escape Supersprint, Admisión de carbono.', NULL, NULL),
-(55, 90, 'Honda', 'Civic Type R (FK8)', 2019, '2.0 VTEC Turbo 320cv', 'Estrictamente de serie.', NULL, NULL),
-(56, 109, 'Seat', 'Leon Cupra', 2018, '2.0 TSI 300cv', 'Stage 1 a 350cv, Downpipe, Admisión Ramair.', NULL, NULL),
-(57, 35, 'Audi', 'RS3', 2021, '2.5 TFSI 400cv', 'Frenos carbocerámicos, Suspensión rebajada.', NULL, NULL),
-(58, 30, 'Volkswagen', 'Golf GTI MK7', 2016, '2.0 TSI 230cv', 'Tramo final recto, Llantas Pretoria 19\".', NULL, NULL),
-(59, 107, 'Toyota', 'GR Yaris', 2022, '1.6 Turbo 261cv', 'Pack Circuit, Latiguillos metálicos.', NULL, NULL),
-(60, 55, 'Ford', 'Mustang GT', 2018, '5.0 V8 450cv', 'Escape Borla, Reprogramación caja automática.', NULL, NULL),
-(61, 19, 'Peugeot', '208 GTI by PS', 2017, '1.6 THP 208cv', 'Autoblocante Torsen, Semislicks Nankang AR-1.', NULL, NULL),
-(62, 31, 'Renault', 'Megane RS Trophy', 2019, '1.8 Turbo 300cv', 'Chasis Cup, Asientos Recaro Pole Position.', NULL, NULL),
-(63, 75, 'Mazda', 'MX-5 (ND)', 2020, '2.0 Skyactiv-G 184cv', 'Suspensión roscada Tein, Línea de escape Cobalt.', NULL, NULL),
-(64, 5, 'Porsche', '911 Carrera S (991)', 2014, '3.8 Boxer 400cv', 'Escape deportivo original, Frenos mejorados.', NULL, NULL),
-(65, 100, 'Nissan', '350Z', 2006, '3.5 V6 300cv', 'Kit de embrague reforzado, Llantas Volk TE37.', NULL, NULL),
-(66, 76, 'Mitsubishi', 'Lancer Evo IX', 2007, '2.0 Turbo 280cv', 'Tracción total, Diferencial activo, Llantas BBS.', NULL, NULL),
-(67, 102, 'Lancia', 'Delta Integrale Evoluzione', 1992, '2.0 Turbo 210cv', 'Restaurado por completo, Color Rosso Monza.', NULL, NULL),
-(68, 70, 'Abarth', '595 Competizione', 2021, '1.4 T-Jet 180cv', 'Escape Record Monza, Asientos Sabelt.', NULL, NULL),
-(69, 31, 'Porsche', 'Cayman GT4', 2016, '3.8 Boxer 385cv', 'Frenos cerámicos, Paquete Clubsport, Jaula antivuelco.', NULL, NULL),
-(70, 84, 'Chevrolet', 'Corvette C6', 2008, '6.2 V8 436cv', 'Sistema de escape Z06, Admisión Vararam.', NULL, NULL),
-(71, 63, 'Subaru', 'BRZ', 2023, '2.4 Boxer 234cv', 'Suspensión KW V3, Alerón ducktail en carbono.', NULL, NULL),
-(72, 29, 'Alfa Romeo', '4C', 2015, '1.7 Turbo 240cv', 'Chasis de carbono, Escape deportivo sin silenciador.', NULL, NULL),
-(73, 20, 'BMW', 'M5 E60', 2006, '5.0 V10 507cv', 'Casquillos de biela cambiados, Escape Eisenmann.', NULL, NULL),
-(74, 76, 'Nissan', 'Skyline GT-R R34', 1999, '2.6 RB26DETT', 'Importado de Japón, Color Bayside Blue, Llantas Nismo.', NULL, NULL),
-(75, 14, 'Mini', 'John Cooper Works', 2019, '2.0 Turbo 231cv', 'Suspensión JCW Pro, Neumáticos Michelin PS4.', NULL, NULL);
+INSERT INTO `vehiculos` (`id`, `usuario_id`, `marca`, `modelo`, `anio`, `motor`, `especificaciones`, `modificaciones`, `fotos`, `vin`) VALUES
+(4, 3, 'BMW', 'M4', 2022, 'BMW M4 Competition (Coupé / Convertible) Potencia:', NULL, NULL, '1773935910-9978-2022-bmw-m4-csl-15.jpg', NULL),
+(5, 4, 'BMW', 'M4 Competition', 2022, '3.0L S58', ' motor gasolina 3.0L TwinPower Turbo de 6 cilindros en línea, con potencias de 480 CV (base) a 510 CV (Competition) y hasta 650 Nm de par, asociado a tracción trasera o M xDrive y cambio automático de 8 velocidades. Es conocido por su aceleración de 0 a 100 km/h en 3,9 segundos', NULL, '1773937634-9008-2022-bmw-m4-csl.webp,1773937634-7149-2022-bmw-m4-csl-15.jpg', NULL),
+(7, 4, 'DS', 'DS7', 2021, '1.6', '300cv', NULL, '1774533985-9130-article-ds-7-crossback-suv-precios-gama-espana-59e741366e01f.jpeg', NULL),
+(8, 4, 'Peugeot', 'Corsa', 2022, '1.2 puretech', 'Escape 180 cv repro ', NULL, '1775163225-7551-5c18ca01-933d-4e86-9c8c-8e2ef20595bf.webp', NULL),
+(9, 5, 'DS', 'DS/', 2021, '1.6', 'dcsfsfsef', NULL, '1775171471-1475-article-ds-7-crossback-suv-precios-gama-espana-59e741366e01f.jpeg', NULL),
+(11, 8, 'Honda', 'NSX', 1999, '3.0i V6 24V', 'Este modelo fue personalizado por el diseñador Bruno Berard, lo que hace que este modelo sea único, con su pintura a juego en color rojo. Este modelo fue expuesto en el Salón de Ginebra en 1997. El propietario actual tiene el vehículo desde hace más de 20 años, desde 2005. El vehículo acaba de pasar una revisión, con reemplazo del kit de distribución (correas y poleas).', NULL, 'ae_69e0b1b3215e5_3e65236b.jpg', NULL),
+(54, 77, 'BMW', 'M3 E46', 2004, '3.2 L6 343cv', 'Llantas CSL, Escape Supersprint, Admisión de carbono.', NULL, NULL, NULL),
+(55, 90, 'Honda', 'Civic Type R (FK8)', 2019, '2.0 VTEC Turbo 320cv', 'Estrictamente de serie.', NULL, NULL, NULL),
+(56, 109, 'Seat', 'Leon Cupra', 2018, '2.0 TSI 300cv', 'Stage 1 a 350cv, Downpipe, Admisión Ramair.', NULL, NULL, NULL),
+(57, 35, 'Audi', 'RS3', 2021, '2.5 TFSI 400cv', 'Frenos carbocerámicos, Suspensión rebajada.', NULL, NULL, NULL),
+(58, 30, 'Volkswagen', 'Golf GTI MK7', 2016, '2.0 TSI 230cv', 'Tramo final recto, Llantas Pretoria 19\".', NULL, NULL, NULL),
+(59, 107, 'Toyota', 'GR Yaris', 2022, '1.6 Turbo 261cv', 'Pack Circuit, Latiguillos metálicos.', NULL, NULL, NULL),
+(60, 55, 'Ford', 'Mustang GT', 2018, '5.0 V8 450cv', 'Escape Borla, Reprogramación caja automática.', NULL, NULL, NULL),
+(61, 19, 'Peugeot', '208 GTI by PS', 2017, '1.6 THP 208cv', 'Autoblocante Torsen, Semislicks Nankang AR-1.', NULL, NULL, NULL),
+(62, 31, 'Renault', 'Megane RS Trophy', 2019, '1.8 Turbo 300cv', 'Chasis Cup, Asientos Recaro Pole Position.', NULL, NULL, NULL),
+(63, 75, 'Mazda', 'MX-5 (ND)', 2020, '2.0 Skyactiv-G 184cv', 'Suspensión roscada Tein, Línea de escape Cobalt.', NULL, NULL, NULL),
+(64, 5, 'Porsche', '911 Carrera S (991)', 2014, '3.8 Boxer 400cv', 'Escape deportivo original, Frenos mejorados.', NULL, NULL, NULL),
+(65, 100, 'Nissan', '350Z', 2006, '3.5 V6 300cv', 'Kit de embrague reforzado, Llantas Volk TE37.', NULL, NULL, NULL),
+(66, 76, 'Mitsubishi', 'Lancer Evo IX', 2007, '2.0 Turbo 280cv', 'Tracción total, Diferencial activo, Llantas BBS.', NULL, NULL, NULL),
+(67, 102, 'Lancia', 'Delta Integrale Evoluzione', 1992, '2.0 Turbo 210cv', 'Restaurado por completo, Color Rosso Monza.', NULL, NULL, NULL),
+(68, 70, 'Abarth', '595 Competizione', 2021, '1.4 T-Jet 180cv', 'Escape Record Monza, Asientos Sabelt.', NULL, NULL, NULL),
+(69, 31, 'Porsche', 'Cayman GT4', 2016, '3.8 Boxer 385cv', 'Frenos cerámicos, Paquete Clubsport, Jaula antivuelco.', NULL, NULL, NULL),
+(70, 84, 'Chevrolet', 'Corvette C6', 2008, '6.2 V8 436cv', 'Sistema de escape Z06, Admisión Vararam.', NULL, NULL, NULL),
+(71, 63, 'Subaru', 'BRZ', 2023, '2.4 Boxer 234cv', 'Suspensión KW V3, Alerón ducktail en carbono.', NULL, NULL, NULL),
+(72, 29, 'Alfa Romeo', '4C', 2015, '1.7 Turbo 240cv', 'Chasis de carbono, Escape deportivo sin silenciador.', NULL, NULL, NULL),
+(73, 20, 'BMW', 'M5 E60', 2006, '5.0 V10 507cv', 'Casquillos de biela cambiados, Escape Eisenmann.', NULL, NULL, NULL),
+(74, 76, 'Nissan', 'Skyline GT-R R34', 1999, '2.6 RB26DETT', 'Importado de Japón, Color Bayside Blue, Llantas Nismo.', NULL, NULL, NULL),
+(75, 14, 'Mini', 'John Cooper Works', 2019, '2.0 Turbo 231cv', 'Suspensión JCW Pro, Neumáticos Michelin PS4.', NULL, NULL, NULL),
+(76, 11, 'Alpine', 'A290', 2025, 'Electrico', '', NULL, NULL, NULL),
+(77, 8, 'Rolls-Royce', 'Ghost', 2011, '6.6L V-Shaped12 563CV (Gasoline)', 'Sedan/Saloon. Tracción: RWD/Rear-Wheel Drive. Fabricado en: ENGLAND.', NULL, NULL, 'SCA664S5XBUX50081'),
+(78, 8, 'Ford', 'Mustang Bullit', 2019, '5L V-Shaped8 480CV (Gasoline)', 'Coupe. Fabricado en: UNITED STATES (USA).', NULL, NULL, '1FA6P8K08K5502350');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vehiculo_fotos`
+--
+
+CREATE TABLE `vehiculo_fotos` (
+  `id` int(11) NOT NULL,
+  `vehiculo_id` int(11) NOT NULL,
+  `ruta_foto` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `vehiculo_fotos`
+--
+
+INSERT INTO `vehiculo_fotos` (`id`, `vehiculo_id`, `ruta_foto`) VALUES
+(1, 76, 'ae_6a0418b911fc9_cfa59c4e.jpg'),
+(2, 11, 'ae_6a04194cd6f3c_1685b280.jpg'),
+(4, 77, 'ae_6a04607312e52_63528903.jpg'),
+(5, 77, 'ae_6a046073138d0_04640b74.jpeg'),
+(6, 77, 'ae_6a04607313c87_479773d3.webp'),
+(7, 78, 'ae_6a0462b90667c_95ca0ecc.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vehiculo_mantenimientos`
+--
+
+CREATE TABLE `vehiculo_mantenimientos` (
+  `id` int(11) NOT NULL,
+  `vehiculo_id` int(11) NOT NULL,
+  `tarea` varchar(100) NOT NULL,
+  `fecha` datetime DEFAULT current_timestamp(),
+  `km_actuales` int(11) NOT NULL,
+  `coste` decimal(10,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `vehiculo_mantenimientos`
+--
+
+INSERT INTO `vehiculo_mantenimientos` (`id`, `vehiculo_id`, `tarea`, `fecha`, `km_actuales`, `coste`) VALUES
+(2, 11, 'Cambio de Aceite', '2026-05-18 13:57:08', 58000, 150.00);
 
 --
 -- Índices para tablas volcadas
@@ -528,6 +746,14 @@ ALTER TABLE `eventos_asistentes`
   ADD PRIMARY KEY (`id_evento`,`id_usuario`);
 
 --
+-- Indices de la tabla `evento_asistentes`
+--
+ALTER TABLE `evento_asistentes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unica_asistencia` (`usuario_id`,`evento_id`),
+  ADD KEY `evento_id` (`evento_id`);
+
+--
 -- Indices de la tabla `mantenimientos`
 --
 ALTER TABLE `mantenimientos`
@@ -545,7 +771,22 @@ ALTER TABLE `mensajes`
 -- Indices de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `peticiones_ia`
+--
+ALTER TABLE `peticiones_ia`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`);
+
+--
+-- Indices de la tabla `peticiones_recomendar`
+--
+ALTER TABLE `peticiones_recomendar`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
 -- Indices de la tabla `productos`
@@ -575,6 +816,20 @@ ALTER TABLE `vehiculos`
   ADD KEY `usuario_id` (`usuario_id`);
 
 --
+-- Indices de la tabla `vehiculo_fotos`
+--
+ALTER TABLE `vehiculo_fotos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `vehiculo_id` (`vehiculo_id`);
+
+--
+-- Indices de la tabla `vehiculo_mantenimientos`
+--
+ALTER TABLE `vehiculo_mantenimientos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `vehiculo_id` (`vehiculo_id`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -582,13 +837,19 @@ ALTER TABLE `vehiculos`
 -- AUTO_INCREMENT de la tabla `comentarios_foro`
 --
 ALTER TABLE `comentarios_foro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
+-- AUTO_INCREMENT de la tabla `evento_asistentes`
+--
+ALTER TABLE `evento_asistentes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `mantenimientos`
@@ -600,13 +861,25 @@ ALTER TABLE `mantenimientos`
 -- AUTO_INCREMENT de la tabla `mensajes`
 --
 ALTER TABLE `mensajes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
+
+--
+-- AUTO_INCREMENT de la tabla `peticiones_ia`
+--
+ALTER TABLE `peticiones_ia`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `peticiones_recomendar`
+--
+ALTER TABLE `peticiones_recomendar`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
@@ -630,7 +903,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `vehiculos`
 --
 ALTER TABLE `vehiculos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+
+--
+-- AUTO_INCREMENT de la tabla `vehiculo_fotos`
+--
+ALTER TABLE `vehiculo_fotos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `vehiculo_mantenimientos`
+--
+ALTER TABLE `vehiculo_mantenimientos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
@@ -644,11 +929,36 @@ ALTER TABLE `comentarios_foro`
   ADD CONSTRAINT `comentarios_foro_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
+-- Filtros para la tabla `evento_asistentes`
+--
+ALTER TABLE `evento_asistentes`
+  ADD CONSTRAINT `evento_asistentes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `evento_asistentes_ibfk_2` FOREIGN KEY (`evento_id`) REFERENCES `eventos` (`id`) ON DELETE CASCADE;
+
+--
 -- Filtros para la tabla `mensajes`
 --
 ALTER TABLE `mensajes`
   ADD CONSTRAINT `mensajes_ibfk_1` FOREIGN KEY (`remitente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `mensajes_ibfk_2` FOREIGN KEY (`destinatario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `peticiones_ia`
+--
+ALTER TABLE `peticiones_ia`
+  ADD CONSTRAINT `peticiones_ia_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `peticiones_recomendar`
+--
+ALTER TABLE `peticiones_recomendar`
+  ADD CONSTRAINT `peticiones_recomendar_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `publicaciones`
@@ -661,448 +971,18 @@ ALTER TABLE `publicaciones`
 --
 ALTER TABLE `vehiculos`
   ADD CONSTRAINT `vehiculos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
---
--- Base de datos: `phpmyadmin`
---
-CREATE DATABASE IF NOT EXISTS `phpmyadmin` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-USE `phpmyadmin`;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__bookmark`
---
-
-CREATE TABLE `pma__bookmark` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `dbase` varchar(255) NOT NULL DEFAULT '',
-  `user` varchar(255) NOT NULL DEFAULT '',
-  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `query` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Bookmarks';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__central_columns`
---
-
-CREATE TABLE `pma__central_columns` (
-  `db_name` varchar(64) NOT NULL,
-  `col_name` varchar(64) NOT NULL,
-  `col_type` varchar(64) NOT NULL,
-  `col_length` text DEFAULT NULL,
-  `col_collation` varchar(64) NOT NULL,
-  `col_isNull` tinyint(1) NOT NULL,
-  `col_extra` varchar(255) DEFAULT '',
-  `col_default` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Central list of columns';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__column_info`
---
-
-CREATE TABLE `pma__column_info` (
-  `id` int(5) UNSIGNED NOT NULL,
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `table_name` varchar(64) NOT NULL DEFAULT '',
-  `column_name` varchar(64) NOT NULL DEFAULT '',
-  `comment` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `mimetype` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `transformation` varchar(255) NOT NULL DEFAULT '',
-  `transformation_options` varchar(255) NOT NULL DEFAULT '',
-  `input_transformation` varchar(255) NOT NULL DEFAULT '',
-  `input_transformation_options` varchar(255) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Column information for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__designer_settings`
---
-
-CREATE TABLE `pma__designer_settings` (
-  `username` varchar(64) NOT NULL,
-  `settings_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Settings related to Designer';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__export_templates`
---
-
-CREATE TABLE `pma__export_templates` (
-  `id` int(5) UNSIGNED NOT NULL,
-  `username` varchar(64) NOT NULL,
-  `export_type` varchar(10) NOT NULL,
-  `template_name` varchar(64) NOT NULL,
-  `template_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Saved export templates';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__favorite`
---
-
-CREATE TABLE `pma__favorite` (
-  `username` varchar(64) NOT NULL,
-  `tables` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Favorite tables';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__history`
---
-
-CREATE TABLE `pma__history` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `username` varchar(64) NOT NULL DEFAULT '',
-  `db` varchar(64) NOT NULL DEFAULT '',
-  `table` varchar(64) NOT NULL DEFAULT '',
-  `timevalue` timestamp NOT NULL DEFAULT current_timestamp(),
-  `sqlquery` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='SQL history for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__navigationhiding`
---
-
-CREATE TABLE `pma__navigationhiding` (
-  `username` varchar(64) NOT NULL,
-  `item_name` varchar(64) NOT NULL,
-  `item_type` varchar(64) NOT NULL,
-  `db_name` varchar(64) NOT NULL,
-  `table_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Hidden items of navigation tree';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__pdf_pages`
---
-
-CREATE TABLE `pma__pdf_pages` (
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `page_nr` int(10) UNSIGNED NOT NULL,
-  `page_descr` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='PDF relation pages for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__recent`
---
-
-CREATE TABLE `pma__recent` (
-  `username` varchar(64) NOT NULL,
-  `tables` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Recently accessed tables';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__relation`
---
-
-CREATE TABLE `pma__relation` (
-  `master_db` varchar(64) NOT NULL DEFAULT '',
-  `master_table` varchar(64) NOT NULL DEFAULT '',
-  `master_field` varchar(64) NOT NULL DEFAULT '',
-  `foreign_db` varchar(64) NOT NULL DEFAULT '',
-  `foreign_table` varchar(64) NOT NULL DEFAULT '',
-  `foreign_field` varchar(64) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Relation table';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__savedsearches`
---
-
-CREATE TABLE `pma__savedsearches` (
-  `id` int(5) UNSIGNED NOT NULL,
-  `username` varchar(64) NOT NULL DEFAULT '',
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `search_name` varchar(64) NOT NULL DEFAULT '',
-  `search_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Saved searches';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__table_coords`
---
-
-CREATE TABLE `pma__table_coords` (
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `table_name` varchar(64) NOT NULL DEFAULT '',
-  `pdf_page_number` int(11) NOT NULL DEFAULT 0,
-  `x` float UNSIGNED NOT NULL DEFAULT 0,
-  `y` float UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Table coordinates for phpMyAdmin PDF output';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__table_info`
---
-
-CREATE TABLE `pma__table_info` (
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `table_name` varchar(64) NOT NULL DEFAULT '',
-  `display_field` varchar(64) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Table information for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__table_uiprefs`
---
-
-CREATE TABLE `pma__table_uiprefs` (
-  `username` varchar(64) NOT NULL,
-  `db_name` varchar(64) NOT NULL,
-  `table_name` varchar(64) NOT NULL,
-  `prefs` text NOT NULL,
-  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Tables'' UI preferences';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__tracking`
---
-
-CREATE TABLE `pma__tracking` (
-  `db_name` varchar(64) NOT NULL,
-  `table_name` varchar(64) NOT NULL,
-  `version` int(10) UNSIGNED NOT NULL,
-  `date_created` datetime NOT NULL,
-  `date_updated` datetime NOT NULL,
-  `schema_snapshot` text NOT NULL,
-  `schema_sql` text DEFAULT NULL,
-  `data_sql` longtext DEFAULT NULL,
-  `tracking` set('UPDATE','REPLACE','INSERT','DELETE','TRUNCATE','CREATE DATABASE','ALTER DATABASE','DROP DATABASE','CREATE TABLE','ALTER TABLE','RENAME TABLE','DROP TABLE','CREATE INDEX','DROP INDEX','CREATE VIEW','ALTER VIEW','DROP VIEW') DEFAULT NULL,
-  `tracking_active` int(1) UNSIGNED NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Database changes tracking for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__userconfig`
---
-
-CREATE TABLE `pma__userconfig` (
-  `username` varchar(64) NOT NULL,
-  `timevalue` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `config_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='User preferences storage for phpMyAdmin';
-
---
--- Volcado de datos para la tabla `pma__userconfig`
---
-
-INSERT INTO `pma__userconfig` (`username`, `timevalue`, `config_data`) VALUES
-('root', '2026-05-04 16:36:31', '{\"Console\\/Mode\":\"collapse\",\"lang\":\"es\"}');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__usergroups`
---
-
-CREATE TABLE `pma__usergroups` (
-  `usergroup` varchar(64) NOT NULL,
-  `tab` varchar(64) NOT NULL,
-  `allowed` enum('Y','N') NOT NULL DEFAULT 'N'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='User groups with configured menu items';
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pma__users`
---
-
-CREATE TABLE `pma__users` (
-  `username` varchar(64) NOT NULL,
-  `usergroup` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Users and their assignments to user groups';
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `pma__bookmark`
---
-ALTER TABLE `pma__bookmark`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `pma__central_columns`
---
-ALTER TABLE `pma__central_columns`
-  ADD PRIMARY KEY (`db_name`,`col_name`);
-
---
--- Indices de la tabla `pma__column_info`
---
-ALTER TABLE `pma__column_info`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `db_name` (`db_name`,`table_name`,`column_name`);
-
---
--- Indices de la tabla `pma__designer_settings`
---
-ALTER TABLE `pma__designer_settings`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indices de la tabla `pma__export_templates`
---
-ALTER TABLE `pma__export_templates`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `u_user_type_template` (`username`,`export_type`,`template_name`);
-
---
--- Indices de la tabla `pma__favorite`
---
-ALTER TABLE `pma__favorite`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indices de la tabla `pma__history`
---
-ALTER TABLE `pma__history`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `username` (`username`,`db`,`table`,`timevalue`);
-
---
--- Indices de la tabla `pma__navigationhiding`
---
-ALTER TABLE `pma__navigationhiding`
-  ADD PRIMARY KEY (`username`,`item_name`,`item_type`,`db_name`,`table_name`);
-
---
--- Indices de la tabla `pma__pdf_pages`
---
-ALTER TABLE `pma__pdf_pages`
-  ADD PRIMARY KEY (`page_nr`),
-  ADD KEY `db_name` (`db_name`);
-
---
--- Indices de la tabla `pma__recent`
---
-ALTER TABLE `pma__recent`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indices de la tabla `pma__relation`
---
-ALTER TABLE `pma__relation`
-  ADD PRIMARY KEY (`master_db`,`master_table`,`master_field`),
-  ADD KEY `foreign_field` (`foreign_db`,`foreign_table`);
-
---
--- Indices de la tabla `pma__savedsearches`
---
-ALTER TABLE `pma__savedsearches`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `u_savedsearches_username_dbname` (`username`,`db_name`,`search_name`);
-
---
--- Indices de la tabla `pma__table_coords`
---
-ALTER TABLE `pma__table_coords`
-  ADD PRIMARY KEY (`db_name`,`table_name`,`pdf_page_number`);
-
---
--- Indices de la tabla `pma__table_info`
---
-ALTER TABLE `pma__table_info`
-  ADD PRIMARY KEY (`db_name`,`table_name`);
-
---
--- Indices de la tabla `pma__table_uiprefs`
---
-ALTER TABLE `pma__table_uiprefs`
-  ADD PRIMARY KEY (`username`,`db_name`,`table_name`);
-
---
--- Indices de la tabla `pma__tracking`
---
-ALTER TABLE `pma__tracking`
-  ADD PRIMARY KEY (`db_name`,`table_name`,`version`);
-
---
--- Indices de la tabla `pma__userconfig`
---
-ALTER TABLE `pma__userconfig`
-  ADD PRIMARY KEY (`username`);
 
 --
--- Indices de la tabla `pma__usergroups`
+-- Filtros para la tabla `vehiculo_fotos`
 --
-ALTER TABLE `pma__usergroups`
-  ADD PRIMARY KEY (`usergroup`,`tab`,`allowed`);
+ALTER TABLE `vehiculo_fotos`
+  ADD CONSTRAINT `vehiculo_fotos_ibfk_1` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculos` (`id`) ON DELETE CASCADE;
 
---
--- Indices de la tabla `pma__users`
---
-ALTER TABLE `pma__users`
-  ADD PRIMARY KEY (`username`,`usergroup`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `pma__bookmark`
---
-ALTER TABLE `pma__bookmark`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `pma__column_info`
---
-ALTER TABLE `pma__column_info`
-  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `pma__export_templates`
---
-ALTER TABLE `pma__export_templates`
-  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `pma__history`
---
-ALTER TABLE `pma__history`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `pma__pdf_pages`
---
-ALTER TABLE `pma__pdf_pages`
-  MODIFY `page_nr` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `pma__savedsearches`
---
-ALTER TABLE `pma__savedsearches`
-  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
--- Base de datos: `test`
+-- Filtros para la tabla `vehiculo_mantenimientos`
 --
-CREATE DATABASE IF NOT EXISTS `test` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `test`;
+ALTER TABLE `vehiculo_mantenimientos`
+  ADD CONSTRAINT `vehiculo_mantenimientos_ibfk_1` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculos` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

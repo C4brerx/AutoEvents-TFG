@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
+const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL)
+    ? process.env.REACT_APP_API_URL
+    : 'http://localhost/autoevents/backend';
+
 const Community = () => {
     const [publicaciones, setPublicaciones] = useState([]);
     const [loading, setLoading] = useState(true);
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [enviando, setEnviando] = useState(false);
 
-    // Estados para la vista de Hilo (Thread)
     const [postActivo, setPostActivo] = useState(null);
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState('');
@@ -19,7 +22,7 @@ const Community = () => {
     const cargarPublicaciones = async () => {
         setLoading(true);
         try {
-            const respuesta = await fetch('http://localhost/autoevents/backend/foros.php', { method: 'GET', credentials: 'include' });
+            const respuesta = await fetch(`${API_URL}/foros.php`, { method: 'GET', credentials: 'include' });
             const datos = await respuesta.json();
             if (datos.estado === 'exito') setPublicaciones(datos.publicaciones);
         } catch (error) {
@@ -31,12 +34,11 @@ const Community = () => {
 
     useEffect(() => { cargarPublicaciones(); }, []);
 
-    // --- FUNCIONES DEL HILO ---
     const abrirPost = async (post) => {
         setPostActivo(post);
         setCargandoComentarios(true);
         try {
-            const res = await fetch(`http://localhost/autoevents/backend/comentarios.php?post_id=${post.id}`, { credentials: 'include' });
+            const res = await fetch(`${API_URL}/comentarios.php?post_id=${post.id}`, { credentials: 'include' });
             const data = await res.json();
             if (data.estado === 'exito') setComentarios(data.comentarios);
         } catch (err) {
@@ -51,7 +53,7 @@ const Community = () => {
         if (!nuevoComentario.trim()) return;
         setEnviando(true);
         try {
-            const res = await fetch('http://localhost/autoevents/backend/comentarios.php', {
+            const res = await fetch(`${API_URL}/comentarios.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ publicacion_id: postActivo.id, contenido: nuevoComentario }),
@@ -62,9 +64,11 @@ const Community = () => {
                 setNuevoComentario('');
                 abrirPost(postActivo); // Recarga los comentarios del post
                 cargarPublicaciones(); // Actualiza el contador en la lista general
+            } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: data.mensaje || 'Error al enviar.', background: '#1a1a1a', color: '#fff' });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Error al enviar.', background: '#1a1a1a', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Error de conexión.', background: '#1a1a1a', color: '#fff' });
         } finally {
             setEnviando(false);
         }
@@ -74,7 +78,8 @@ const Community = () => {
         e.preventDefault();
         setEnviando(true);
         try {
-            const res = await fetch('http://localhost/autoevents/backend/foros.php', {
+            // CORRECCIÓN TUTOR: Uso de API_URL
+            const res = await fetch(`${API_URL}/foros.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoPost),
@@ -86,9 +91,11 @@ const Community = () => {
                 setNuevoPost({ titulo: '', contenido: '', categoria: 'General' });
                 setMostrarFormulario(false);
                 cargarPublicaciones();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: data.mensaje || 'Error al publicar', background: '#1a1a1a', color: '#fff' });
             }
         } catch (error) {
-            Swal.fire({ icon: 'error', title: 'Error', background: '#1a1a1a', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Error de conexión', background: '#1a1a1a', color: '#fff' });
         } finally {
             setEnviando(false);
         }
@@ -96,9 +103,9 @@ const Community = () => {
 
     const formatearFecha = (f) => new Date(f).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
-    // ==========================================
-    // VISTA 2: DENTRO DE UN HILO (POST ACTIVO)
-    // ==========================================
+    // ===========================
+    // VISTA 2: DENTRO DE UN HILO
+    // ===========================
     if (postActivo) {
         return (
             <div className="fade-in">
@@ -122,7 +129,6 @@ const Community = () => {
                     <p className="text-light text-pre-wrap fs-5" style={{ lineHeight: '1.6' }}>{postActivo.contenido}</p>
                 </div>
 
-                {/* Lista de Respuestas */}
                 <h5 className="text-white fw-bold mb-3 ms-2"><i className="bi bi-chat-left-text me-2"></i>Respuestas ({comentarios.length})</h5>
 
                 {cargandoComentarios ? (
@@ -141,7 +147,6 @@ const Community = () => {
                     </div>
                 )}
 
-                {/* Formulario de Respuesta MEJORADO */}
                 <div className="glass-card p-3 mt-3 shadow-sm" style={{ borderRadius: '12px', marginLeft: '2rem', backgroundColor: 'rgba(20, 20, 20, 0.8)' }}>
                     <form onSubmit={enviarComentario} className="d-flex gap-3 align-items-center">
                         <textarea
@@ -211,7 +216,6 @@ const Community = () => {
                 </div>
             )}
 
-            {/* LISTADO DE POSTS */}
             {loading ? (
                 <div className="text-center text-light my-5"><div className="spinner-border text-danger"></div></div>
             ) : (

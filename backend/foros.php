@@ -1,6 +1,19 @@
 <?php
 // backend/foros.php
-session_start();
+
+session_set_cookie_params([
+    'lifetime' => 86400,
+    'path' => '/',
+    'domain' => 'localhost',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -25,22 +38,33 @@ if ($metodo === 'GET') {
         $stmt = $pdo->query($sql);
         echo json_encode(["estado" => "exito", "publicaciones" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
     } catch (PDOException $e) {
+        // 2. CORRECCIÓN TUTOR: Ocultar el getMessage() al cliente
+        error_log("Fallo SQL en foros (GET): " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["estado" => "error", "mensaje" => $e->getMessage()]);
+        echo json_encode(["estado" => "error", "mensaje" => "Error interno al cargar las publicaciones."]);
     }
 }
 
 elseif ($metodo === 'POST' && $usuario_id) {
     $datos = json_decode(file_get_contents("php://input"));
+
     if (!empty($datos->titulo) && !empty($datos->contenido)) {
         try {
+            $titulo_seguro = htmlspecialchars(strip_tags($datos->titulo), ENT_QUOTES, 'UTF-8');
+            $contenido_seguro = htmlspecialchars(strip_tags($datos->contenido), ENT_QUOTES, 'UTF-8');
+            $categoria_segura = isset($datos->categoria) ? htmlspecialchars(strip_tags($datos->categoria), ENT_QUOTES, 'UTF-8') : 'General';
+
             $stmt = $pdo->prepare("INSERT INTO publicaciones (usuario_id, titulo, contenido, categoria) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$usuario_id, $datos->titulo, $datos->contenido, $datos->categoria ?? 'General']);
+            $stmt->execute([$usuario_id, $titulo_seguro, $contenido_seguro, $categoria_segura]);
             echo json_encode(["estado" => "exito", "mensaje" => "Publicación creada correctamente."]);
         } catch (PDOException $e) {
+            error_log("Fallo SQL en foros (POST): " . $e->getMessage());
             http_response_code(500);
-            echo json_encode(["estado" => "error", "mensaje" => "Error al publicar."]);
+            echo json_encode(["estado" => "error", "mensaje" => "Error interno al publicar."]);
         }
+    } else {
+        http_response_code(400);
+        echo json_encode(["estado" => "error", "mensaje" => "El título y el contenido son obligatorios."]);
     }
 }
 ?>
